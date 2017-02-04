@@ -151,16 +151,16 @@ withParameterDictionary:(nullable NSDictionary *)arguments
           keys:(nullable NSArray *)keys
          where:(nullable NSString *)condition
        orderBy:(nullable NSString *)orders
-        offset:(NSInteger)offset
-         limit:(NSInteger)limit
+        offset:(NSUInteger)offset
+         limit:(NSUInteger)limit
         finish:(nullable SQLExecuteResultBlock)finish;
 
 @end
 
 /**
  *  对原始的四个增删改查的调用方法进行简化，主要去除那些可空参数
+ *  这里的select方法并没有写全，组合方式太多了，需要用到的时候再加上去吧
  */
-#warning 这里的select方法并没有写全，组合方式太多了，需要用到的时候再加上去吧
 @interface SQLExecutor (EasyInvoking)
 
 - (void)update:(nonnull NSString *)table
@@ -204,8 +204,8 @@ withParameterDictionary:(nullable NSDictionary *)arguments
 - (void)select:(nonnull NSString *)table
          where:(nullable NSString *)condition
        orderBy:(nullable NSString *)orders
-        offset:(NSInteger)offset
-         limit:(NSInteger)limit
+        offset:(NSUInteger)offset
+         limit:(NSUInteger)limit
         finish:(nullable SQLExecuteResultBlock)finish;
 
 @end

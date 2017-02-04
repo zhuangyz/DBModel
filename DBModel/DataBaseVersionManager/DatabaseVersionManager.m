@@ -131,6 +131,13 @@
 }
 
 - (void)updateDatabaseToVersion:(uint64_t)version finish:(void (^)(BOOL))finish {
+//    NSAssert(strcmp(dispatch_queue_get_label(DISPATCH_CURRENT_QUEUE_LABEL),
+//                    dispatch_queue_get_label(dispatch_get_main_queue())) == 0,
+//             @"%@ -%@ 应当运行在主线程上", self.class, NSStringFromSelector(_cmd));
+    
+    NSAssert([NSThread isMainThread],
+             @"%@ -%@ 应当运行在主线程上", self.class, NSStringFromSelector(_cmd));
+    
     BOOL success = YES;
     // 待更新版本号，已排序
     NSArray *pendingVersions = self.pendingVersions;

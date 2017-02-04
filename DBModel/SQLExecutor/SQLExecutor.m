@@ -34,7 +34,8 @@
 @implementation SQLExecutor
 
 - (void)dealloc {
-    
+    NSLog(@"%@ dealloc", self.class);
+    [self.dbQueue close];
 }
 
 - (instancetype)init {
@@ -46,13 +47,48 @@
 }
 
 + (instancetype)executorWithDBPath:(NSString *)path {
+    NSAssert([NSThread mainThread], @"%@ +%@ 应当运行在主线程", [self class], NSStringFromSelector(_cmd));
     NSAssert(path, @"path can not nill");
     SQLExecutor *executor = [[SQLExecutor alloc] init];
-    executor.executeQueue = dispatch_queue_create("com.sql_executor_queue", DISPATCH_QUEUE_SERIAL);
     executor.dbPath = path;
-    executor.dbQueue = [[FMDatabaseQueue alloc] initWithPath:path];
+    NSURL *pathUrl = [NSURL URLWithString:path];
+    executor.executeQueue = [[self class] getExecuteQueue:[pathUrl lastPathComponent]];
+    executor.dbQueue = [[self class] getFMDBQueue:path];
     
     return executor;
+}
+
+// 每个数据库都有且仅有一个队列
++ (dispatch_queue_t)getExecuteQueue:(NSString *)DBFileName {
+    // 每个数据库对应一个队列，并将队列保存起来，所以即使不同的SQLExecutor对象，只要数据库是同一个，就还是使用同一个
+    static NSMutableDictionary *queues = nil;
+    static dispatch_once_t once;
+    dispatch_once(&once, ^{
+        queues = [NSMutableDictionary dictionary];
+    });
+    
+    dispatch_queue_t queue = queues[DBFileName];
+    if (!queue) {
+        NSString *queueLabel = [NSString stringWithFormat:@"com.sql_executor_queue.%@", DBFileName];
+        queue = dispatch_queue_create([queueLabel UTF8String], DISPATCH_QUEUE_SERIAL);
+        queues[DBFileName] = queue;
+    }
+    return queues[DBFileName];
+}
+
+// 该方法和+getExecuteQueue:是同样的目的，只是创建的是FMDB的队列
++ (FMDatabaseQueue *)getFMDBQueue:(NSString *)DBPath {
+    static NSMutableDictionary *queues = nil;
+    static dispatch_once_t once;
+    dispatch_once(&once, ^{
+        queues = [NSMutableDictionary dictionary];
+    });
+    FMDatabaseQueue *queue = queues[DBPath];
+    if (!queue) {
+        queue = [[FMDatabaseQueue alloc] initWithPath:DBPath];
+        queues[DBPath] = queue;
+    }
+    return queue;
 }
 
 - (void)executeQuery:(nonnull NSString *)sql
@@ -65,7 +101,6 @@
 withArgumentsInArray:(nullable NSArray *)arguments
               finish:(nullable SQLExecuteResultBlock)finish {
     
-//    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
     dispatch_async(self.executeQueue, ^{
         [self.dbQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
             NSMutableArray *result = [NSMutableArray array];
@@ -121,7 +156,6 @@ withParameterDictionary:(nullable NSDictionary *)params
 orWithArgumentsInArray:(nullable NSArray *)arguments
                finish:(nullable SQLExecuteResultBlock)finish {
     
-//    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
     dispatch_async(self.executeQueue, ^{
         [self.dbQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
             BOOL success = NO;
@@ -198,7 +232,7 @@ orWithArgumentsInArray:(nullable NSArray *)arguments
     if (isReplace) {
         replaceOfIgnoreStr = @" or replace";
     } else if (isIgnore) {
-        replaceOfIgnoreStr = @" or replace";
+        replaceOfIgnoreStr = @" or ignore";
     }
     
     NSString *sql = [NSString stringWithFormat:sqlFormat, replaceOfIgnoreStr, table, [keys componentsJoinedByString:@","], [valuePlaceholders componentsJoinedByString:@","]];
@@ -251,8 +285,8 @@ orWithArgumentsInArray:(nullable NSArray *)arguments
           keys:(NSArray *)keys
          where:(NSString *)condition
        orderBy:(NSString *)orders
-        offset:(NSInteger)offset
-         limit:(NSInteger)limit
+        offset:(NSUInteger)offset
+         limit:(NSUInteger)limit
         finish:(SQLExecuteResultBlock)finish {
     
     NSString *sqlFormat = @"select %@ from %@";
@@ -351,8 +385,8 @@ orWithArgumentsInArray:(nullable NSArray *)arguments
 - (void)select:(nonnull NSString *)table
          where:(nullable NSString *)condition
        orderBy:(nullable NSString *)orders
-        offset:(NSInteger)offset
-         limit:(NSInteger)limit
+        offset:(NSUInteger)offset
+         limit:(NSUInteger)limit
         finish:(nullable SQLExecuteResultBlock)finish {
     [self select:table keys:nil where:condition orderBy:orders offset:offset limit:limit finish:finish];
 }

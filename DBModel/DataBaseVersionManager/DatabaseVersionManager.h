@@ -44,6 +44,7 @@
 
 - (void)addMigrations:(NSArray<id<DBVersionMigrating>> *)migrations;
 
+// 将数据库更新至version版本（在主线程上调用该方法）
 - (void)updateDatabaseToVersion:(uint64_t)version finish:(void(^)(BOOL success))finish;
 
 @end

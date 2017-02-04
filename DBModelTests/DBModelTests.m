@@ -13,14 +13,15 @@
 #import "DatabaseVersionManager.h"
 #import "DatabaseConstants.h"
 #import "DBVersionMigration1.h"
+#import "Image.h"
 
 #define WAIT do {\
-[self expectationForNotification:@"Test" object:nil handler:nil];\
-[self waitForExpectationsWithTimeout:20 handler:nil];\
-} while (0)
+        [self expectationForNotification:@"Test" object:nil handler:nil];\
+        [self waitForExpectationsWithTimeout:60 handler:nil];\
+    } while (0)
 
 #define NOTIFY \
-[[NSNotificationCenter defaultCenter]postNotificationName:@"Test" object:nil]
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"Test" object:nil]
 
 @interface DBModelTests : XCTestCase
 
