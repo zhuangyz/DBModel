@@ -13,7 +13,6 @@
 #import "DatabaseVersionManager.h"
 #import "DatabaseConstants.h"
 #import "DBVersionMigration1.h"
-#import "Image.h"
 
 #define WAIT do {\
         [self expectationForNotification:@"Test" object:nil handler:nil];\
