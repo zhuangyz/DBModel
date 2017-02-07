@@ -81,7 +81,7 @@
 // 插入10万条数据时耗时122秒，有点慢
 - (void)testUserInsert {
     NSMutableArray *users = [NSMutableArray array];
-    for (NSInteger i = 0; i < 100000; i++) {
+    for (NSInteger i = 0; i < 1000; i++) {
         User *user = [[User alloc] init];
         user.userId = i;
         user.userName = [NSString stringWithFormat:@"user_name%ld", i];
@@ -91,14 +91,45 @@
     }
     NSTimeInterval beginTime = [[NSDate date] timeIntervalSince1970];
     [User save:users finish:^(SQLExecuteFailModel *failModel) {
+        NSLog(@"插入%ld条数据 耗时%f秒", users.count, [[NSDate date] timeIntervalSince1970] - beginTime);
         if (!failModel) {
             NSLog(@"插入/更新成功");
         } else {
             NSLog(@"插入/更新失败 %@", failModel.errorMsg);
         }
-        NSLog(@"插入%ld条数据 耗时%f秒", users.count, [[NSDate date] timeIntervalSince1970] - beginTime);
         NOTIFY;
     }];
+    WAIT;
+}
+
+// 插入1000条数据时，比拼接sql语句快了0.3秒左右，插入10万条数据时耗时120秒，比拼接快2秒左右
+- (void)testNativeInsertSQL {
+    NSMutableArray<NSDictionary *> *users = [NSMutableArray array];
+    for (NSInteger i = 0; i < 100000; i++) {
+        NSMutableDictionary *user = [NSMutableDictionary dictionary];
+        user[@"user_id"] = @(i);
+        user[@"user_name"] = [NSString stringWithFormat:@"user_name%ld", i];
+        user[@"mobile"] = [NSString stringWithFormat:@"%ld", 13632200000 + i];
+        user[@"age"] = @((i % 80) + 1);
+        
+        [users addObject:user];
+    }
+    
+    SQLExecutor *executor = [SQLExecutor executorWithDBPath:kDatabasePath];
+    NSTimeInterval beginTime = [[NSDate date] timeIntervalSince1970];
+    for (NSDictionary *user in users) {
+        [executor executeUpdate:@"insert or replace into User(age,mobile,user_id,user_name) values(:age,:mobile,:user_id,:user_name);" withParameterDictionary:user finish:^(BOOL success, id  _Nullable result, SQLExecuteFailModel * _Nullable failModel) {
+            if (user == [users lastObject]) {
+                NSLog(@"插入%ld条数据 耗时%f秒", users.count, [[NSDate date] timeIntervalSince1970] - beginTime);
+                if (!failModel) {
+                    NSLog(@"插入/更新成功");
+                } else {
+                    NSLog(@"插入/更新失败 %@", failModel.errorMsg);
+                }
+                NOTIFY;
+            }
+        }];
+    }
     WAIT;
 }
 

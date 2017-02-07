@@ -51,54 +51,26 @@
 + (instancetype)executorWithDBPath:(NSString *)path {
     NSAssert([NSThread mainThread], @"%@ +%@ 应当运行在主线程", [self class], NSStringFromSelector(_cmd));
     NSAssert(path, @"path can not nill");
-    SQLExecutor *executor = [[SQLExecutor alloc] init];
-    executor.dbPath = path;
-    NSURL *pathUrl = [NSURL URLWithString:path];
-    executor.executeQueue = [[self class] getExecuteQueue:[pathUrl lastPathComponent]];
-    executor.dbQueue = [[self class] getFMDBQueue:path];
     
+    static NSMutableDictionary<NSString *, SQLExecutor *> *executors = nil;
+    if (!executors) {
+        executors = [NSMutableDictionary dictionary];
+    }
+    
+    SQLExecutor *executor = executors[path];
+    if (!executor) {
+        executor = [[SQLExecutor alloc] init];
+        executor.dbPath = path;
+        executor.dbQueue = [[FMDatabaseQueue alloc] initWithPath:path];
+        executor.executeQueue = [[CRUDOperationQueue alloc] init];
+        executor.executeQueue.name = [NSString stringWithFormat:@"com.sql_executor_queue.%@", [[[NSURL alloc] initWithString:path] lastPathComponent]];
+        
+        executors[path] = executor;
+    }
     return executor;
 }
 
-// 每个数据库都有且仅有一个队列
-+ (CRUDOperationQueue *)getExecuteQueue:(NSString *)DBFileName {
-    // 每个数据库对应一个队列，并将队列保存起来，所以即使不同的SQLExecutor对象，只要数据库是同一个，就还是使用同一个
-    static NSMutableDictionary<NSString *, CRUDOperationQueue *> *queues = nil;
-    static dispatch_once_t once;
-    dispatch_once(&once, ^{
-        queues = [NSMutableDictionary dictionary];
-    });
-    
-    CRUDOperationQueue *queue = queues[DBFileName];
-    if (!queue) {
-        NSString *queueLabel = [NSString stringWithFormat:@"com.sql_executor_queue.%@", DBFileName];
-        queue = [[CRUDOperationQueue alloc] init];
-        queue.name = queueLabel;
-        
-        queues[DBFileName] = queue;
-    }
-    return queues[DBFileName];
-}
-
-// 该方法和+getExecuteQueue:是同样的目的，只是创建的是FMDB的队列
-+ (FMDatabaseQueue *)getFMDBQueue:(NSString *)DBPath {
-    static NSMutableDictionary<NSString *, FMDatabaseQueue *> *queues = nil;
-    static dispatch_once_t once;
-    dispatch_once(&once, ^{
-        queues = [NSMutableDictionary dictionary];
-    });
-    FMDatabaseQueue *queue = queues[DBPath];
-    if (!queue) {
-        queue = [[FMDatabaseQueue alloc] initWithPath:DBPath];
-        queues[DBPath] = queue;
-    }
-    return queue;
-}
-
-/**
- * 查询
- */
-
+#pragma mark 查询
 - (CRUDOperation *)executeQuery:(nonnull NSString *)sql
                          finish:(nullable SQLExecuteResultBlock)finish {
     
@@ -141,10 +113,7 @@
     return operation;
 }
 
-/**
- * 插入、更新、删除
- */
-
+#pragma mark 插入、更新、删除
 - (CRUDOperation *)executeUpdate:(nonnull NSString *)sql
                           finish:(nullable SQLExecuteResultBlock)finish {
 
