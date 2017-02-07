@@ -9,6 +9,10 @@
 /* Begin PBXBuildFile section */
 		3338DB19AAF35D338F2EEB6C /* libPods-DBModelTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BBF3F0F51D102DE4A4F0F3E /* libPods-DBModelTests.a */; };
 		5D0974411E4844250071CAD8 /* NSOperationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D0974401E4844250071CAD8 /* NSOperationTests.m */; };
+		5D0974441E4853010071CAD8 /* CRUDOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D0974431E4853010071CAD8 /* CRUDOperation.m */; };
+		5D0974451E4853010071CAD8 /* CRUDOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D0974431E4853010071CAD8 /* CRUDOperation.m */; };
+		5D0974481E48532A0071CAD8 /* CRUDOperationQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D0974471E48532A0071CAD8 /* CRUDOperationQueue.m */; };
+		5D0974491E48532A0071CAD8 /* CRUDOperationQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D0974471E48532A0071CAD8 /* CRUDOperationQueue.m */; };
 		68709EE0B2D4632E6D002BCB /* libPods-DBModel.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4BA27C23E86EC55D3C862357 /* libPods-DBModel.a */; };
 		7E022CE51D32CC0400701E35 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E022CE41D32CC0400701E35 /* main.m */; };
 		7E022CE81D32CC0400701E35 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E022CE71D32CC0400701E35 /* AppDelegate.m */; };
@@ -45,6 +49,10 @@
 		4BA27C23E86EC55D3C862357 /* libPods-DBModel.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-DBModel.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4F97EFDE28310E66DC10F82B /* Pods-DBModelTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DBModelTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-DBModelTests/Pods-DBModelTests.release.xcconfig"; sourceTree = "<group>"; };
 		5D0974401E4844250071CAD8 /* NSOperationTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSOperationTests.m; sourceTree = "<group>"; };
+		5D0974421E4853010071CAD8 /* CRUDOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CRUDOperation.h; sourceTree = "<group>"; };
+		5D0974431E4853010071CAD8 /* CRUDOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CRUDOperation.m; sourceTree = "<group>"; };
+		5D0974461E48532A0071CAD8 /* CRUDOperationQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CRUDOperationQueue.h; sourceTree = "<group>"; };
+		5D0974471E48532A0071CAD8 /* CRUDOperationQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CRUDOperationQueue.m; sourceTree = "<group>"; };
 		5DB8EADCFA76135D91618887 /* Pods-DBModelTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DBModelTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-DBModelTests/Pods-DBModelTests.debug.xcconfig"; sourceTree = "<group>"; };
 		6ED55A8F77389571C97442EA /* Pods-DBModel.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DBModel.debug.xcconfig"; path = "Pods/Target Support Files/Pods-DBModel/Pods-DBModel.debug.xcconfig"; sourceTree = "<group>"; };
 		7E022CE01D32CC0300701E35 /* DBModel.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DBModel.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -212,6 +220,10 @@
 				7E022D211D32CC8F00701E35 /* NSString+SQLOrder.m */,
 				7E022D221D32CC8F00701E35 /* SQLExecutor.h */,
 				7E022D231D32CC8F00701E35 /* SQLExecutor.m */,
+				5D0974421E4853010071CAD8 /* CRUDOperation.h */,
+				5D0974431E4853010071CAD8 /* CRUDOperation.m */,
+				5D0974461E48532A0071CAD8 /* CRUDOperationQueue.h */,
+				5D0974471E48532A0071CAD8 /* CRUDOperationQueue.m */,
 			);
 			path = SQLExecutor;
 			sourceTree = "<group>";
@@ -439,11 +451,13 @@
 				7E022D281D32CC8F00701E35 /* BaseDBModel+CreateTable.m in Sources */,
 				7E022CEB1D32CC0400701E35 /* ViewController.m in Sources */,
 				7E022D291D32CC8F00701E35 /* BaseDBModel.m in Sources */,
+				5D0974481E48532A0071CAD8 /* CRUDOperationQueue.m in Sources */,
 				7E022D2A1D32CC8F00701E35 /* AppDelegate+DatabaseUpdate.m in Sources */,
 				7E022D2B1D32CC8F00701E35 /* BaseDBVersionMigration.m in Sources */,
 				7E022D2D1D32CC8F00701E35 /* DBVersionMigration1.m in Sources */,
 				7E022D2E1D32CC8F00701E35 /* NSString+SQLLink.m in Sources */,
 				7E022D2C1D32CC8F00701E35 /* DatabaseVersionManager.m in Sources */,
+				5D0974441E4853010071CAD8 /* CRUDOperation.m in Sources */,
 				7E022D311D32CC8F00701E35 /* User.m in Sources */,
 				7E022D301D32CC8F00701E35 /* SQLExecutor.m in Sources */,
 				7E022D271D32CC8F00701E35 /* BaseDBModel+ActiveRecord.m in Sources */,
@@ -459,6 +473,8 @@
 			files = (
 				5D0974411E4844250071CAD8 /* NSOperationTests.m in Sources */,
 				7E022CFE1D32CC0400701E35 /* DBModelTests.m in Sources */,
+				5D0974451E4853010071CAD8 /* CRUDOperation.m in Sources */,
+				5D0974491E48532A0071CAD8 /* CRUDOperationQueue.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "CRUDOperation.h"
 #import "NSString+SQLLink.h"
 #import "NSString+SQLOrder.h"
 
@@ -43,35 +44,35 @@ typedef void(^SQLExecuteResultBlock)(BOOL success, _Nullable id result, SQLExecu
 /**
  *  执行查询功能
  */
-- (void)executeQuery:(nonnull NSString *)sql
-              finish:(nullable SQLExecuteResultBlock)finish;
+- (nonnull CRUDOperation *)executeQuery:(nonnull NSString *)sql
+                                 finish:(nullable SQLExecuteResultBlock)finish;
 
 /**
  *  执行查询功能
  */
-- (void)executeQuery:(nonnull NSString *)sql
-withArgumentsInArray:(nullable NSArray *)arguments
-              finish:(nullable SQLExecuteResultBlock)finish;
+- (nonnull CRUDOperation *)executeQuery:(nonnull NSString *)sql
+                   withArgumentsInArray:(nullable NSArray *)arguments
+                                 finish:(nullable SQLExecuteResultBlock)finish;
 
 /**
  *  执行更新功能
  */
-- (void)executeUpdate:(nonnull NSString *)sql
-               finish:(nullable SQLExecuteResultBlock)finish;
+- (nonnull CRUDOperation *)executeUpdate:(nonnull NSString *)sql
+                                  finish:(nullable SQLExecuteResultBlock)finish;
 
 /**
  *  执行更新功能
  */
-- (void)executeUpdate:(nonnull NSString *)sql
-withParameterDictionary:(nullable NSDictionary *)arguments
-               finish:(nullable SQLExecuteResultBlock)finish;
+- (nonnull CRUDOperation *)executeUpdate:(nonnull NSString *)sql
+                 withParameterDictionary:(nullable NSDictionary *)arguments
+                                  finish:(nullable SQLExecuteResultBlock)finish;
 
 /**
  *  执行更新功能
  */
-- (void)executeUpdate:(nonnull NSString *)sql
- withArgumentsInArray:(nullable NSArray *)arguments
-               finish:(nullable SQLExecuteResultBlock)finish;
+- (nonnull CRUDOperation *)executeUpdate:(nonnull NSString *)sql
+                    withArgumentsInArray:(nullable NSArray *)arguments
+                                  finish:(nullable SQLExecuteResultBlock)finish;
 
 @end
 
@@ -86,9 +87,9 @@ withParameterDictionary:(nullable NSDictionary *)arguments
  *  @param keyValues 用一个字典来传递字段和字段值，key必须是数据库字段名！！！
  *  @param finish
  */
-- (void)insertInto:(nonnull NSString *)table
-         keyValues:(nonnull NSDictionary *)keyValues
-            finish:(nullable SQLExecuteResultBlock)finish;
+- (nonnull CRUDOperation *)insertInto:(nonnull NSString *)table
+                            keyValues:(nonnull NSDictionary *)keyValues
+                               finish:(nullable SQLExecuteResultBlock)finish;
 
 /**
  *  插入或更新
@@ -97,9 +98,9 @@ withParameterDictionary:(nullable NSDictionary *)arguments
  *  @param keyValues 用一个字典来传递字段和字段值，key必须是数据库字段名！！！
  *  @param finish
  */
-- (void)insertOrReplaceInto:(nonnull NSString *)table
-                  keyValues:(nonnull NSDictionary *)keyValues
-                     finish:(nullable SQLExecuteResultBlock)finish;
+- (nonnull CRUDOperation *)insertOrReplaceInto:(nonnull NSString *)table
+                                     keyValues:(nonnull NSDictionary *)keyValues
+                                        finish:(nullable SQLExecuteResultBlock)finish;
 
 /**
  *  插入或忽略
@@ -108,9 +109,9 @@ withParameterDictionary:(nullable NSDictionary *)arguments
  *  @param keyValues 用一个字典来传递字段和字段值，key必须是数据库字段名！！！
  *  @param finish
  */
-- (void)insertOrIgnoreInto:(nonnull NSString *)table
-                 keyValues:(nonnull NSDictionary *)keyValues
-                    finish:(nullable SQLExecuteResultBlock)finish;
+- (nonnull CRUDOperation *)insertOrIgnoreInto:(nonnull NSString *)table
+                                    keyValues:(nonnull NSDictionary *)keyValues
+                                       finish:(nullable SQLExecuteResultBlock)finish;
 
 /**
  *  改
@@ -120,10 +121,10 @@ withParameterDictionary:(nullable NSDictionary *)arguments
  *  @param condition 条件语句，可以通过分类NSString+SQLLink的方法来生成条件语句，例如[[@"a=1" and:@"b=2"] or:[@"c=1" and:@"d=2"]]
  *  @param finish
  */
-- (void)update:(nonnull NSString *)table
-     keyValues:(nonnull NSDictionary *)keyValues
-         where:(nullable NSString *)condition
-        finish:(nullable SQLExecuteResultBlock)finish;
+- (nonnull CRUDOperation *)update:(nonnull NSString *)table
+                        keyValues:(nonnull NSDictionary *)keyValues
+                            where:(nullable NSString *)condition
+                           finish:(nullable SQLExecuteResultBlock)finish;
 
 /**
  *  删
@@ -132,9 +133,9 @@ withParameterDictionary:(nullable NSDictionary *)arguments
  *  @param condition 条件语句，可以通过分类NSString+SQLLink的方法来生成条件语句，例如[[@"a=1" and:@"b=2"] or:[@"c=1" and:@"d=2"]]
  *  @param finish
  */
-- (void)deleteFrom:(nonnull NSString *)table
-             where:(nullable NSString *)condition
-            finish:(nullable SQLExecuteResultBlock)finish;
+- (nonnull CRUDOperation *)deleteFrom:(nonnull NSString *)table
+                                where:(nullable NSString *)condition
+                               finish:(nullable SQLExecuteResultBlock)finish;
 
 /**
  *  查
@@ -147,13 +148,13 @@ withParameterDictionary:(nullable NSDictionary *)arguments
  *  @param limit     限制条数，为0时代表不做限制
  *  @param finish
  */
-- (void)select:(nonnull NSString *)table
-          keys:(nullable NSArray *)keys
-         where:(nullable NSString *)condition
-       orderBy:(nullable NSString *)orders
-        offset:(NSUInteger)offset
-         limit:(NSUInteger)limit
-        finish:(nullable SQLExecuteResultBlock)finish;
+- (nonnull CRUDOperation *)select:(nonnull NSString *)table
+                             keys:(nullable NSArray *)keys
+                            where:(nullable NSString *)condition
+                          orderBy:(nullable NSString *)orders
+                           offset:(NSUInteger)offset
+                            limit:(NSUInteger)limit
+                           finish:(nullable SQLExecuteResultBlock)finish;
 
 @end
 
@@ -163,50 +164,50 @@ withParameterDictionary:(nullable NSDictionary *)arguments
  */
 @interface SQLExecutor (EasyInvoking)
 
-- (void)update:(nonnull NSString *)table
-     keyValues:(nonnull NSDictionary *)keyValues
-        finish:(nullable SQLExecuteResultBlock)finish;
+- (nonnull CRUDOperation *)update:(nonnull NSString *)table
+                        keyValues:(nonnull NSDictionary *)keyValues
+                           finish:(nullable SQLExecuteResultBlock)finish;
 
-- (void)deleteTable:(nonnull NSString *)table
-             finish:(nullable SQLExecuteResultBlock)finish;
+- (nonnull CRUDOperation *)deleteTable:(nonnull NSString *)table
+                                finish:(nullable SQLExecuteResultBlock)finish;
 
-- (void)selectAll:(nonnull NSString *)table
-           finish:(nullable SQLExecuteResultBlock)finish;
+- (nonnull CRUDOperation *)selectAll:(nonnull NSString *)table
+                              finish:(nullable SQLExecuteResultBlock)finish;
 
-- (void)selectAll:(nonnull NSString *)table
-             keys:(nullable NSArray *)keys
-           finish:(nullable SQLExecuteResultBlock)finish;
+- (nonnull CRUDOperation *)selectAll:(nonnull NSString *)table
+                                keys:(nullable NSArray *)keys
+                              finish:(nullable SQLExecuteResultBlock)finish;
 
-- (void)selectAll:(nonnull NSString *)table
-          orderBy:(nullable NSString *)orders
-           finish:(nullable SQLExecuteResultBlock)finish;
+- (nonnull CRUDOperation *)selectAll:(nonnull NSString *)table
+                             orderBy:(nullable NSString *)orders
+                              finish:(nullable SQLExecuteResultBlock)finish;
 
-- (void)selectAll:(nonnull NSString *)table
-             keys:(nullable NSArray *)keys
-          orderBy:(nullable NSString *)orders
-           finish:(nullable SQLExecuteResultBlock)finish;
+- (nonnull CRUDOperation *)selectAll:(nonnull NSString *)table
+                                keys:(nullable NSArray *)keys
+                             orderBy:(nullable NSString *)orders
+                              finish:(nullable SQLExecuteResultBlock)finish;
 
-- (void)select:(nonnull NSString *)table
-         where:(nullable NSString *)condition
-        finish:(nullable SQLExecuteResultBlock)finish;
+- (nonnull CRUDOperation *)select:(nonnull NSString *)table
+                            where:(nullable NSString *)condition
+                           finish:(nullable SQLExecuteResultBlock)finish;
 
-- (void)select:(nonnull NSString *)table
-         where:(nullable NSString *)condition
-       orderBy:(nullable NSString *)orders
-        finish:(nullable SQLExecuteResultBlock)finish;
+- (nonnull CRUDOperation *)select:(nonnull NSString *)table
+                            where:(nullable NSString *)condition
+                          orderBy:(nullable NSString *)orders
+                           finish:(nullable SQLExecuteResultBlock)finish;
 
-- (void)select:(nonnull NSString *)table
-          keys:(nullable NSArray *)keys
-         where:(nullable NSString *)condition
-       orderBy:(nullable NSString *)orders
-        finish:(nullable SQLExecuteResultBlock)finish;
+- (nonnull CRUDOperation *)select:(nonnull NSString *)table
+                             keys:(nullable NSArray *)keys
+                            where:(nullable NSString *)condition
+                          orderBy:(nullable NSString *)orders
+                           finish:(nullable SQLExecuteResultBlock)finish;
 
-- (void)select:(nonnull NSString *)table
-         where:(nullable NSString *)condition
-       orderBy:(nullable NSString *)orders
-        offset:(NSUInteger)offset
-         limit:(NSUInteger)limit
-        finish:(nullable SQLExecuteResultBlock)finish;
+- (nonnull CRUDOperation *)select:(nonnull NSString *)table
+                            where:(nullable NSString *)condition
+                          orderBy:(nullable NSString *)orders
+                           offset:(NSUInteger)offset
+                            limit:(NSUInteger)limit
+                           finish:(nullable SQLExecuteResultBlock)finish;
 
 @end
 

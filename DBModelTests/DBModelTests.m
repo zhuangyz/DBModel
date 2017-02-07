@@ -16,7 +16,7 @@
 
 #define WAIT do {\
         [self expectationForNotification:@"Test" object:nil handler:nil];\
-        [self waitForExpectationsWithTimeout:60 handler:nil];\
+        [self waitForExpectationsWithTimeout:60*3 handler:nil];\
     } while (0)
 
 #define NOTIFY \
@@ -78,9 +78,10 @@
     WAIT;
 }
 
+// 插入10万条数据时耗时122秒，有点慢
 - (void)testUserInsert {
     NSMutableArray *users = [NSMutableArray array];
-    for (NSInteger i = 0; i < 100; i++) {
+    for (NSInteger i = 0; i < 100000; i++) {
         User *user = [[User alloc] init];
         user.userId = i;
         user.userName = [NSString stringWithFormat:@"user_name%ld", i];
@@ -88,12 +89,14 @@
         user.age = (i % 80) + 1;
         [users addObject:user];
     }
+    NSTimeInterval beginTime = [[NSDate date] timeIntervalSince1970];
     [User save:users finish:^(SQLExecuteFailModel *failModel) {
         if (!failModel) {
             NSLog(@"插入/更新成功");
         } else {
             NSLog(@"插入/更新失败 %@", failModel.errorMsg);
         }
+        NSLog(@"插入%ld条数据 耗时%f秒", users.count, [[NSDate date] timeIntervalSince1970] - beginTime);
         NOTIFY;
     }];
     WAIT;
@@ -126,9 +129,11 @@
 
 #pragma mark 查询模块
 - (void)testUserFindAll {
+    NSTimeInterval beginTime = [[NSDate date] timeIntervalSince1970];
     [User findAll:^(NSArray *models, SQLExecuteFailModel *failModel) {
+        NSLog(@"查找到%ld条数据，耗时%f秒", models.count, [[NSDate date] timeIntervalSince1970] - beginTime);
         if (!failModel) {
-            [self printUsers:models];
+//            [self printUsers:models];
         } else {
             NSLog(@"查找失败 %@", failModel.errorMsg);
         }

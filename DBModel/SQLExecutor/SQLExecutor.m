@@ -8,6 +8,7 @@
 
 #import "SQLExecutor.h"
 #import <FMDB.h>
+#import "CRUDOperationQueue.h"
 
 @implementation SQLExecuteFailModel
 
@@ -23,7 +24,7 @@
 
 @interface SQLExecutor ()
 
-@property (nonnull, nonatomic, strong) dispatch_queue_t executeQueue;
+@property (nonnull, nonatomic, strong) CRUDOperationQueue *executeQueue;
 
 @property (nonnull, nonatomic, copy) NSString *dbPath;
 
@@ -35,6 +36,7 @@
 
 - (void)dealloc {
     NSLog(@"%@ dealloc", self.class);
+    [self.executeQueue cancelAllOperations];
     [self.dbQueue close];
 }
 
@@ -59,18 +61,20 @@
 }
 
 // 每个数据库都有且仅有一个队列
-+ (dispatch_queue_t)getExecuteQueue:(NSString *)DBFileName {
++ (CRUDOperationQueue *)getExecuteQueue:(NSString *)DBFileName {
     // 每个数据库对应一个队列，并将队列保存起来，所以即使不同的SQLExecutor对象，只要数据库是同一个，就还是使用同一个
-    static NSMutableDictionary *queues = nil;
+    static NSMutableDictionary<NSString *, CRUDOperationQueue *> *queues = nil;
     static dispatch_once_t once;
     dispatch_once(&once, ^{
         queues = [NSMutableDictionary dictionary];
     });
     
-    dispatch_queue_t queue = queues[DBFileName];
+    CRUDOperationQueue *queue = queues[DBFileName];
     if (!queue) {
         NSString *queueLabel = [NSString stringWithFormat:@"com.sql_executor_queue.%@", DBFileName];
-        queue = dispatch_queue_create([queueLabel UTF8String], DISPATCH_QUEUE_SERIAL);
+        queue = [[CRUDOperationQueue alloc] init];
+        queue.name = queueLabel;
+        
         queues[DBFileName] = queue;
     }
     return queues[DBFileName];
@@ -78,7 +82,7 @@
 
 // 该方法和+getExecuteQueue:是同样的目的，只是创建的是FMDB的队列
 + (FMDatabaseQueue *)getFMDBQueue:(NSString *)DBPath {
-    static NSMutableDictionary *queues = nil;
+    static NSMutableDictionary<NSString *, FMDatabaseQueue *> *queues = nil;
     static dispatch_once_t once;
     dispatch_once(&once, ^{
         queues = [NSMutableDictionary dictionary];
@@ -91,17 +95,21 @@
     return queue;
 }
 
-- (void)executeQuery:(nonnull NSString *)sql
-              finish:(nullable SQLExecuteResultBlock)finish {
+/**
+ * 查询
+ */
+
+- (CRUDOperation *)executeQuery:(nonnull NSString *)sql
+                         finish:(nullable SQLExecuteResultBlock)finish {
     
-    [self executeQuery:sql withArgumentsInArray:nil finish:finish];
+    return [self executeQuery:sql withArgumentsInArray:nil finish:finish];
 }
 
-- (void)executeQuery:(nonnull NSString *)sql
-withArgumentsInArray:(nullable NSArray *)arguments
-              finish:(nullable SQLExecuteResultBlock)finish {
+- (CRUDOperation *)executeQuery:(nonnull NSString *)sql
+           withArgumentsInArray:(nullable NSArray *)arguments
+                         finish:(nullable SQLExecuteResultBlock)finish {
     
-    dispatch_async(self.executeQueue, ^{
+    CRUDOperation *operation = [CRUDOperation blockOperationWithBlock:^{
         [self.dbQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
             NSMutableArray *result = [NSMutableArray array];
             FMResultSet *rs = [db executeQuery:sql withArgumentsInArray:arguments];
@@ -128,35 +136,41 @@ withArgumentsInArray:(nullable NSArray *)arguments
                 run_block_if_exist(finish, YES, result, nil);
             });
         }];
-    });
+    }];
+    [self.executeQueue addOperation:operation];
+    return operation;
 }
 
-- (void)executeUpdate:(nonnull NSString *)sql
-               finish:(nullable SQLExecuteResultBlock)finish {
+/**
+ * 插入、更新、删除
+ */
 
-    [self executeUpdate:sql withParameterDictionary:nil orWithArgumentsInArray:nil finish:finish];
+- (CRUDOperation *)executeUpdate:(nonnull NSString *)sql
+                          finish:(nullable SQLExecuteResultBlock)finish {
+
+    return [self executeUpdate:sql withParameterDictionary:nil orWithArgumentsInArray:nil finish:finish];
 }
 
-- (void)executeUpdate:(nonnull NSString *)sql
-withParameterDictionary:(nullable NSDictionary *)arguments
-               finish:(nullable SQLExecuteResultBlock)finish {
+- (CRUDOperation *)executeUpdate:(nonnull NSString *)sql
+         withParameterDictionary:(nullable NSDictionary *)arguments
+                          finish:(nullable SQLExecuteResultBlock)finish {
     
-    [self executeUpdate:sql withParameterDictionary:arguments orWithArgumentsInArray:nil finish:finish];
+    return [self executeUpdate:sql withParameterDictionary:arguments orWithArgumentsInArray:nil finish:finish];
 }
 
-- (void)executeUpdate:(nonnull NSString *)sql
- withArgumentsInArray:(nullable NSArray *)arguments
-               finish:(nullable SQLExecuteResultBlock)finish {
+- (CRUDOperation *)executeUpdate:(nonnull NSString *)sql
+            withArgumentsInArray:(nullable NSArray *)arguments
+                          finish:(nullable SQLExecuteResultBlock)finish {
     
-    [self executeUpdate:sql withParameterDictionary:nil orWithArgumentsInArray:arguments finish:finish];
+    return [self executeUpdate:sql withParameterDictionary:nil orWithArgumentsInArray:arguments finish:finish];
 }
 
-- (void)executeUpdate:(nonnull NSString *)sql
-withParameterDictionary:(nullable NSDictionary *)params
-orWithArgumentsInArray:(nullable NSArray *)arguments
-               finish:(nullable SQLExecuteResultBlock)finish {
+- (CRUDOperation *)executeUpdate:(nonnull NSString *)sql
+         withParameterDictionary:(nullable NSDictionary *)params
+          orWithArgumentsInArray:(nullable NSArray *)arguments
+                          finish:(nullable SQLExecuteResultBlock)finish {
     
-    dispatch_async(self.executeQueue, ^{
+    CRUDOperation *operation = [CRUDOperation blockOperationWithBlock:^{
         [self.dbQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
             BOOL success = NO;
             
@@ -190,36 +204,38 @@ orWithArgumentsInArray:(nullable NSArray *)arguments
                 run_block_if_exist(finish, success, nil, nil);
             });
         }];
-    });
+    }];
+    [self.executeQueue addOperation:operation];
+    return operation;
 }
 
 @end
 
 @implementation SQLExecutor (CRUD)
 
-- (void)insertInto:(NSString *)table
-         keyValues:(NSDictionary *)keyValues
-            finish:(SQLExecuteResultBlock)finish {
-    [self insertInto:table isReplace:NO isIgnore:NO keyValues:keyValues finish:finish];
+- (CRUDOperation *)insertInto:(NSString *)table
+                    keyValues:(NSDictionary *)keyValues
+                       finish:(SQLExecuteResultBlock)finish {
+    return [self insertInto:table isReplace:NO isIgnore:NO keyValues:keyValues finish:finish];
 }
 
-- (void)insertOrReplaceInto:(NSString *)table
-                  keyValues:(NSDictionary *)keyValues
-                     finish:(SQLExecuteResultBlock)finish {
-    [self insertInto:table isReplace:YES isIgnore:NO keyValues:keyValues finish:finish];
+- (CRUDOperation *)insertOrReplaceInto:(NSString *)table
+                             keyValues:(NSDictionary *)keyValues
+                                finish:(SQLExecuteResultBlock)finish {
+    return [self insertInto:table isReplace:YES isIgnore:NO keyValues:keyValues finish:finish];
 }
 
-- (void)insertOrIgnoreInto:(NSString *)table
-                 keyValues:(NSDictionary *)keyValues
-                    finish:(SQLExecuteResultBlock)finish {
-    [self insertInto:table isReplace:NO isIgnore:YES keyValues:keyValues finish:finish];
+- (CRUDOperation *)insertOrIgnoreInto:(NSString *)table
+                            keyValues:(NSDictionary *)keyValues
+                               finish:(SQLExecuteResultBlock)finish {
+    return [self insertInto:table isReplace:NO isIgnore:YES keyValues:keyValues finish:finish];
 }
 
-- (void)insertInto:(NSString *)table
-         isReplace:(BOOL)isReplace
-          isIgnore:(BOOL)isIgnore
-         keyValues:(NSDictionary *)keyValues
-            finish:(SQLExecuteResultBlock)finish {
+- (CRUDOperation *)insertInto:(NSString *)table
+                    isReplace:(BOOL)isReplace
+                     isIgnore:(BOOL)isIgnore
+                    keyValues:(NSDictionary *)keyValues
+                       finish:(SQLExecuteResultBlock)finish {
     
     NSString *sqlFormat = @"insert%@ into %@(%@) values(%@);";
     NSArray *keys = [keyValues allKeys];
@@ -236,16 +252,15 @@ orWithArgumentsInArray:(nullable NSArray *)arguments
     }
     
     NSString *sql = [NSString stringWithFormat:sqlFormat, replaceOfIgnoreStr, table, [keys componentsJoinedByString:@","], [valuePlaceholders componentsJoinedByString:@","]];
-    NSLog(@"%@", sql);
+//    NSLog(@"%@", sql);
     
-    [self executeUpdate:sql withParameterDictionary:keyValues finish:finish];
+    return [self executeUpdate:sql withParameterDictionary:keyValues finish:finish];
 }
 
-
-- (void)update:(NSString *)table
-     keyValues:(NSDictionary *)keyValues
-         where:(NSString *)condition
-        finish:(SQLExecuteResultBlock)finish {
+- (CRUDOperation *)update:(NSString *)table
+                keyValues:(NSDictionary *)keyValues
+                    where:(NSString *)condition
+                   finish:(SQLExecuteResultBlock)finish {
     
     NSString *sqlFormat = @"update %@ set %@";
     NSArray *keys = [keyValues allKeys];
@@ -261,14 +276,14 @@ orWithArgumentsInArray:(nullable NSArray *)arguments
     }
     
     [sql appendString:@";"];
-    NSLog(@"%@", sql);
+//    NSLog(@"%@", sql);
     
-    [self executeUpdate:sql withParameterDictionary:keyValues finish:finish];
+    return [self executeUpdate:sql withParameterDictionary:keyValues finish:finish];
 }
 
-- (void)deleteFrom:(NSString *)table
-             where:(NSString *)condition
-            finish:(SQLExecuteResultBlock)finish {
+- (CRUDOperation *)deleteFrom:(NSString *)table
+                        where:(NSString *)condition
+                       finish:(SQLExecuteResultBlock)finish {
     
     NSMutableString *sql = [NSMutableString stringWithFormat:@"delete from %@", table];
     
@@ -276,18 +291,18 @@ orWithArgumentsInArray:(nullable NSArray *)arguments
         [sql appendFormat:@" where %@;", condition];
     }
     
-    NSLog(@"%@", sql);
+//    NSLog(@"%@", sql);
     
-    [self executeUpdate:sql finish:finish];
+    return [self executeUpdate:sql finish:finish];
 }
 
-- (void)select:(NSString *)table
-          keys:(NSArray *)keys
-         where:(NSString *)condition
-       orderBy:(NSString *)orders
-        offset:(NSUInteger)offset
-         limit:(NSUInteger)limit
-        finish:(SQLExecuteResultBlock)finish {
+- (CRUDOperation *)select:(NSString *)table
+                     keys:(NSArray *)keys
+                    where:(NSString *)condition
+                  orderBy:(NSString *)orders
+                   offset:(NSUInteger)offset
+                    limit:(NSUInteger)limit
+                   finish:(SQLExecuteResultBlock)finish {
     
     NSString *sqlFormat = @"select %@ from %@";
     NSString *keysStr = @"*";
@@ -311,84 +326,83 @@ orWithArgumentsInArray:(nullable NSArray *)arguments
     if (limit > 0) {
         [sql appendFormat:@" limit %ld", limit];
     }
-    
     if (offset > 0) {
         [sql appendFormat:@" offset %ld", offset];
     }
     
     [sql appendString:@";"];
-    NSLog(@"%@", sql);
+//    NSLog(@"%@", sql);
     
-    [self executeQuery:sql finish:finish];
+    return [self executeQuery:sql finish:finish];
 }
 
 @end
 
 @implementation SQLExecutor (EasyInvoking)
 
-- (void)update:(nonnull NSString *)table
-     keyValues:(nonnull NSDictionary *)keyValues
-        finish:(nullable SQLExecuteResultBlock)finish {
-    [self update:table keyValues:keyValues where:nil finish:finish];
+- (CRUDOperation *)update:(nonnull NSString *)table
+                keyValues:(nonnull NSDictionary *)keyValues
+                   finish:(nullable SQLExecuteResultBlock)finish {
+    return [self update:table keyValues:keyValues where:nil finish:finish];
 }
 
-- (void)deleteTable:(nonnull NSString *)table
-             finish:(nullable SQLExecuteResultBlock)finish {
-    [self deleteFrom:table where:nil finish:finish];
+- (CRUDOperation *)deleteTable:(nonnull NSString *)table
+                        finish:(nullable SQLExecuteResultBlock)finish {
+    return [self deleteFrom:table where:nil finish:finish];
 }
 
-- (void)selectAll:(nonnull NSString *)table
-           finish:(nullable SQLExecuteResultBlock)finish {
-    [self select:table keys:nil where:nil orderBy:nil offset:0 limit:0 finish:finish];
+- (CRUDOperation *)selectAll:(nonnull NSString *)table
+                      finish:(nullable SQLExecuteResultBlock)finish {
+    return [self select:table keys:nil where:nil orderBy:nil offset:0 limit:0 finish:finish];
 }
 
-- (void)selectAll:(nonnull NSString *)table
-             keys:(nullable NSArray *)keys
-           finish:(nullable SQLExecuteResultBlock)finish {
-    [self select:table keys:keys where:nil orderBy:nil offset:0 limit:0 finish:finish];
+- (CRUDOperation *)selectAll:(nonnull NSString *)table
+                        keys:(nullable NSArray *)keys
+                      finish:(nullable SQLExecuteResultBlock)finish {
+    return [self select:table keys:keys where:nil orderBy:nil offset:0 limit:0 finish:finish];
 }
 
-- (void)selectAll:(nonnull NSString *)table
-          orderBy:(nullable NSString *)orders
-           finish:(nullable SQLExecuteResultBlock)finish {
-    [self select:table keys:nil where:nil orderBy:orders offset:0 limit:0 finish:finish];
+- (CRUDOperation *)selectAll:(nonnull NSString *)table
+                     orderBy:(nullable NSString *)orders
+                      finish:(nullable SQLExecuteResultBlock)finish {
+    return [self select:table keys:nil where:nil orderBy:orders offset:0 limit:0 finish:finish];
 }
 
-- (void)selectAll:(nonnull NSString *)table
-             keys:(nullable NSArray *)keys
-          orderBy:(nullable NSString *)orders
-           finish:(nullable SQLExecuteResultBlock)finish {
-    [self select:table keys:keys where:nil orderBy:orders offset:0 limit:0 finish:finish];
+- (CRUDOperation *)selectAll:(nonnull NSString *)table
+                        keys:(nullable NSArray *)keys
+                     orderBy:(nullable NSString *)orders
+                      finish:(nullable SQLExecuteResultBlock)finish {
+    return [self select:table keys:keys where:nil orderBy:orders offset:0 limit:0 finish:finish];
 }
 
-- (void)select:(nonnull NSString *)table
-         where:(nullable NSString *)condition
-        finish:(nullable SQLExecuteResultBlock)finish {
-    [self select:table keys:nil where:condition orderBy:nil offset:0 limit:0 finish:finish];
+- (CRUDOperation *)select:(nonnull NSString *)table
+                    where:(nullable NSString *)condition
+                   finish:(nullable SQLExecuteResultBlock)finish {
+    return [self select:table keys:nil where:condition orderBy:nil offset:0 limit:0 finish:finish];
 }
 
-- (void)select:(nonnull NSString *)table
-         where:(nullable NSString *)condition
-       orderBy:(nullable NSString *)orders
-        finish:(nullable SQLExecuteResultBlock)finish {
-    [self select:table keys:nil where:condition orderBy:orders offset:0 limit:0 finish:finish];
+- (CRUDOperation *)select:(nonnull NSString *)table
+                    where:(nullable NSString *)condition
+                  orderBy:(nullable NSString *)orders
+                   finish:(nullable SQLExecuteResultBlock)finish {
+    return [self select:table keys:nil where:condition orderBy:orders offset:0 limit:0 finish:finish];
 }
 
-- (void)select:(nonnull NSString *)table
-          keys:(nullable NSArray *)keys
-         where:(nullable NSString *)condition
-       orderBy:(nullable NSString *)orders
-        finish:(nullable SQLExecuteResultBlock)finish {
-    [self select:table keys:keys where:condition orderBy:orders offset:0 limit:0 finish:finish];
+- (CRUDOperation *)select:(nonnull NSString *)table
+                     keys:(nullable NSArray *)keys
+                    where:(nullable NSString *)condition
+                  orderBy:(nullable NSString *)orders
+                   finish:(nullable SQLExecuteResultBlock)finish {
+    return [self select:table keys:keys where:condition orderBy:orders offset:0 limit:0 finish:finish];
 }
 
-- (void)select:(nonnull NSString *)table
-         where:(nullable NSString *)condition
-       orderBy:(nullable NSString *)orders
-        offset:(NSUInteger)offset
-         limit:(NSUInteger)limit
-        finish:(nullable SQLExecuteResultBlock)finish {
-    [self select:table keys:nil where:condition orderBy:orders offset:offset limit:limit finish:finish];
+- (CRUDOperation *)select:(nonnull NSString *)table
+                    where:(nullable NSString *)condition
+                  orderBy:(nullable NSString *)orders
+                   offset:(NSUInteger)offset
+                    limit:(NSUInteger)limit
+                   finish:(nullable SQLExecuteResultBlock)finish {
+    return [self select:table keys:nil where:condition orderBy:orders offset:offset limit:limit finish:finish];
 }
 
 @end
