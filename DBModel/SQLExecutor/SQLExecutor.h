@@ -80,38 +80,58 @@ typedef void(^SQLExecuteResultBlock)(BOOL success, _Nullable id result, SQLExecu
  *  将增删改查的sql语句封装
  */
 @interface SQLExecutor (CRUD)
+#warning 下面注释掉的老方法都是插入一条数据的，目前看起来它们似乎完全没有价值，插入多条数据的那个方法完全可以代替它们，暂时先留着不删除
+///**
+// *  插入一条数据
+// *
+// *  @param table     表名
+// *  @param keyValues 用一个字典来传递字段和字段值，key必须是数据库字段名！！！
+// *  @param finish
+// */
+//- (nonnull CRUDOperation *)insertInto:(nonnull NSString *)table
+//                            keyValues:(nonnull NSDictionary *)keyValues
+//                               finish:(nullable SQLExecuteResultBlock)finish;
+//
+///**
+// *  插入或更新一条数据
+// *
+// *  @param table     表名
+// *  @param keyValues 用一个字典来传递字段和字段值，key必须是数据库字段名！！！
+// *  @param finish
+// */
+//- (nonnull CRUDOperation *)insertOrReplaceInto:(nonnull NSString *)table
+//                                     keyValues:(nonnull NSDictionary *)keyValues
+//                                        finish:(nullable SQLExecuteResultBlock)finish;
+//
+///**
+// *  插入或忽略一条数据
+// *
+// *  @param table     表名
+// *  @param keyValues 用一个字典来传递字段和字段值，key必须是数据库字段名！！！
+// *  @param finish
+// */
+//- (nonnull CRUDOperation *)insertOrIgnoreInto:(nonnull NSString *)table
+//                                    keyValues:(nonnull NSDictionary *)keyValues
+//                                       finish:(nullable SQLExecuteResultBlock)finish;
+
 /**
- *  增
- *
- *  @param table     表名
- *  @param keyValues 用一个字典来传递字段和字段值，key必须是数据库字段名！！！
- *  @param finish
+ 插入多条数据
+
+ @param table       表名
+ @param replace     如果其中一些数据是存在的，那么这些数据是否要替换
+ @param ignore      如果其中一些数据存在，那么这些插入数据的操作是否要略过
+ @param keys        表的字段
+ @param keyValues   和其他方法的keyValues参数不同，这里是指多组keyValue，一条数据就是一组keyValue
+ @param finish
+ 
+ 当replace==YES时，ignore的值将被忽略!!!
  */
 - (nonnull CRUDOperation *)insertInto:(nonnull NSString *)table
-                            keyValues:(nonnull NSDictionary *)keyValues
+                            isReplace:(BOOL)replace
+                             isIgnore:(BOOL)ignore
+                                 keys:(nonnull NSArray<NSString *> *)keys
+                            keyValues:(nonnull NSArray<NSDictionary *> *)keyValues
                                finish:(nullable SQLExecuteResultBlock)finish;
-
-/**
- *  插入或更新
- *
- *  @param table     表名
- *  @param keyValues 用一个字典来传递字段和字段值，key必须是数据库字段名！！！
- *  @param finish
- */
-- (nonnull CRUDOperation *)insertOrReplaceInto:(nonnull NSString *)table
-                                     keyValues:(nonnull NSDictionary *)keyValues
-                                        finish:(nullable SQLExecuteResultBlock)finish;
-
-/**
- *  插入或忽略
- *
- *  @param table     表名
- *  @param keyValues 用一个字典来传递字段和字段值，key必须是数据库字段名！！！
- *  @param finish
- */
-- (nonnull CRUDOperation *)insertOrIgnoreInto:(nonnull NSString *)table
-                                    keyValues:(nonnull NSDictionary *)keyValues
-                                       finish:(nullable SQLExecuteResultBlock)finish;
 
 /**
  *  改
@@ -168,8 +188,8 @@ typedef void(^SQLExecuteResultBlock)(BOOL success, _Nullable id result, SQLExecu
                         keyValues:(nonnull NSDictionary *)keyValues
                            finish:(nullable SQLExecuteResultBlock)finish;
 
-- (nonnull CRUDOperation *)deleteTable:(nonnull NSString *)table
-                                finish:(nullable SQLExecuteResultBlock)finish;
+- (nonnull CRUDOperation *)cleanTable:(nonnull NSString *)table
+                               finish:(nullable SQLExecuteResultBlock)finish;
 
 - (nonnull CRUDOperation *)selectAll:(nonnull NSString *)table
                               finish:(nullable SQLExecuteResultBlock)finish;

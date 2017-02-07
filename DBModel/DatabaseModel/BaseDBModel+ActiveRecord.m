@@ -53,16 +53,18 @@
         NSLog(@"没有数据需要插入数据库");
     }
     
+    NSMutableArray *keyValues = [NSMutableArray array];
     for (BaseDBModel *model in models) {
-        NSMutableDictionary *keyValues = [NSMutableDictionary dictionaryWithDictionary:[model transformToKeyValues]];
-        
-        [[[self class] executor] insertOrReplaceInto:[[self class] tableName] keyValues:keyValues finish:^(BOOL success, id result, SQLExecuteFailModel *failModel) {
-            // 保证只回调一次
-            if ([models lastObject] == model) {
-                run_block_if_exist(finish, failModel);
-            }
-        }];
+        [keyValues addObject:[model transformToKeyValues]];
     }
+    [[[self class] executor] insertInto:[[self class] tableName]
+                              isReplace:YES
+                               isIgnore:NO
+                                   keys:[[self class] allKeys]
+                              keyValues:keyValues
+                                 finish:^(BOOL success, id  _Nullable result, SQLExecuteFailModel * _Nullable failModel) {
+                                     run_block_if_exist(finish, failModel);
+                                 }];
 }
 
 // 删除models
@@ -74,22 +76,24 @@
         NSLog(@"没有数据需要删除");
     }
     
+//    NSMutableString *where = [[NSMutableString alloc] init];
+    NSMutableArray<NSString *> *wheres = [NSMutableArray array];
+    
+    NSArray *primaryKeys = [[self class] primaryKeys];
+    NSArray *allKeys = [[self class] allKeys];
+    
     for (BaseDBModel *model in models) {
         NSDictionary *keyValues = [model transformToKeyValues];
-        NSArray *primaryKeys = [[self class] primaryKeys];
-        NSArray *allKeys = [[self class] allKeys];
         NSString *where = @"";
-        // 如果有主键，使where为主键=主键值
-        for (NSString *primaryKey in primaryKeys) {
-            id value = keyValues[primaryKey];
-            if (value) {
+        
+        if (primaryKeys.count > 0) {
+            // 如果有主键，使where为主键=主键值
+            for (NSString *primaryKey in primaryKeys) {
+                id value = keyValues[primaryKey];
                 where = [where and:[NSString stringWithFormat:@"%@=%@", primaryKey, value]];
-            } else {
-                where = [where and:[NSString stringWithFormat:@"%@=NULL", primaryKey]];
             }
-        }
-        // 如果没有主键，使where为所有字段值
-        if (where.length == 0) {
+        } else {
+            // 如果没有主键，使where为所有字段=它们的值
             for (NSString *key in allKeys) {
                 if (keyValues[key]) {
                     where = [where and:[NSString stringWithFormat:@"%@=%@", key, keyValues[key]]];
@@ -98,19 +102,20 @@
                 }
             }
         }
-        
-        [[[self class] executor] deleteFrom:[[self class] tableName] where:where finish:^(BOOL success, id result, SQLExecuteFailModel *failModel) {
-            if (model == [models lastObject]) {
-                run_block_if_exist(finish, failModel);
-            }
-        }];
+        [wheres addObject:[NSString stringWithFormat:@"(%@)", where]];
     }
+    
+    NSString *condition = [wheres componentsJoinedByString:@" or "];
+    
+    [[[self class] executor] deleteFrom:[[self class] tableName] where:condition finish:^(BOOL success, id  _Nullable result, SQLExecuteFailModel * _Nullable failModel) {
+        run_block_if_exist(finish, failModel);
+    }];
 }
 
 // 清空表
 + (void)deleteAll:(UpdateFinishBlock)finish {
     NSString *table = [[self class] tableName];
-    [[[self class] executor] deleteTable:table finish:^(BOOL success, id result, SQLExecuteFailModel *failModel) {
+    [[[self class] executor] cleanTable:table finish:^(BOOL success, id result, SQLExecuteFailModel *failModel) {
         run_block_if_exist(finish, failModel);
     }];
 }

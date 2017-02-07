@@ -7,7 +7,7 @@
 //
 
 #import "SQLExecutor.h"
-#import <FMDB.h>
+#import "FMDB.h"
 #import "CRUDOperationQueue.h"
 
 @implementation SQLExecuteFailModel
@@ -182,48 +182,83 @@
 
 @implementation SQLExecutor (CRUD)
 
+//- (CRUDOperation *)insertInto:(NSString *)table
+//                    keyValues:(NSDictionary *)keyValues
+//                       finish:(SQLExecuteResultBlock)finish {
+//    return [self insertInto:table isReplace:NO isIgnore:NO keyValues:keyValues finish:finish];
+//}
+//
+//- (CRUDOperation *)insertOrReplaceInto:(NSString *)table
+//                             keyValues:(NSDictionary *)keyValues
+//                                finish:(SQLExecuteResultBlock)finish {
+//    return [self insertInto:table isReplace:YES isIgnore:NO keyValues:keyValues finish:finish];
+//}
+//
+//- (CRUDOperation *)insertOrIgnoreInto:(NSString *)table
+//                            keyValues:(NSDictionary *)keyValues
+//                               finish:(SQLExecuteResultBlock)finish {
+//    return [self insertInto:table isReplace:NO isIgnore:YES keyValues:keyValues finish:finish];
+//}
+//
+//- (CRUDOperation *)insertInto:(NSString *)table
+//                    isReplace:(BOOL)isReplace
+//                     isIgnore:(BOOL)isIgnore
+//                    keyValues:(NSDictionary *)keyValues
+//                       finish:(SQLExecuteResultBlock)finish {
+//    
+//    NSString *sqlFormat = @"insert%@ into %@(%@) values(%@);";
+//    NSArray *keys = [keyValues allKeys];
+//    NSMutableArray *valuePlaceholders = [NSMutableArray array];
+//    for (NSString *key in keys) {
+//        [valuePlaceholders addObject:[NSString stringWithFormat:@":%@", key]];
+//    }
+//    
+//    NSString *replaceOfIgnoreStr = @"";
+//    if (isReplace) {
+//        replaceOfIgnoreStr = @" or replace";
+//    } else if (isIgnore) {
+//        replaceOfIgnoreStr = @" or ignore";
+//    }
+//    
+//    NSString *sql = [NSString stringWithFormat:sqlFormat, replaceOfIgnoreStr, table, [keys componentsJoinedByString:@","], [valuePlaceholders componentsJoinedByString:@","]];
+////    NSLog(@"%@", sql);
+//    
+//    return [self executeUpdate:sql withParameterDictionary:keyValues finish:finish];
+//}
+
 - (CRUDOperation *)insertInto:(NSString *)table
-                    keyValues:(NSDictionary *)keyValues
+                    isReplace:(BOOL)replace
+                     isIgnore:(BOOL)ignore
+                         keys:(NSArray<NSString *> *)keys
+                    keyValues:(NSArray<NSDictionary *> *)keyValues
                        finish:(SQLExecuteResultBlock)finish {
-    return [self insertInto:table isReplace:NO isIgnore:NO keyValues:keyValues finish:finish];
-}
-
-- (CRUDOperation *)insertOrReplaceInto:(NSString *)table
-                             keyValues:(NSDictionary *)keyValues
-                                finish:(SQLExecuteResultBlock)finish {
-    return [self insertInto:table isReplace:YES isIgnore:NO keyValues:keyValues finish:finish];
-}
-
-- (CRUDOperation *)insertOrIgnoreInto:(NSString *)table
-                            keyValues:(NSDictionary *)keyValues
-                               finish:(SQLExecuteResultBlock)finish {
-    return [self insertInto:table isReplace:NO isIgnore:YES keyValues:keyValues finish:finish];
-}
-
-- (CRUDOperation *)insertInto:(NSString *)table
-                    isReplace:(BOOL)isReplace
-                     isIgnore:(BOOL)isIgnore
-                    keyValues:(NSDictionary *)keyValues
-                       finish:(SQLExecuteResultBlock)finish {
+    NSAssert(keys.count > 0, @"%@ -%@ keys不能为空", self.class, NSStringFromSelector(_cmd));
     
-    NSString *sqlFormat = @"insert%@ into %@(%@) values(%@);";
-    NSArray *keys = [keyValues allKeys];
-    NSMutableArray *valuePlaceholders = [NSMutableArray array];
-    for (NSString *key in keys) {
-        [valuePlaceholders addObject:[NSString stringWithFormat:@":%@", key]];
+    NSMutableString *sql = [NSMutableString stringWithString:@"insert "];
+    if (replace) {
+        [sql appendString:@"or replace "];
+    } else if (ignore) {
+        [sql appendString:@"or ignore "];
+    }
+    [sql appendString:[NSString stringWithFormat:@"into %@(%@) values", table, [keys componentsJoinedByString:@","]]];
+    
+    for (NSDictionary *keyValue in keyValues) {
+        NSMutableString *valueStr = [[NSMutableString alloc] initWithString:@"("];
+        for (NSString *key in keys) {
+            if (keyValue[key]) {
+                [valueStr appendFormat:@"'%@',", keyValue[key]];
+            } else {
+                [valueStr appendString:@"NULL,"];
+            }
+        }
+        [valueStr replaceCharactersInRange:NSMakeRange(valueStr.length - 1, 1) withString:@"),"];
+        [sql appendString:valueStr];
     }
     
-    NSString *replaceOfIgnoreStr = @"";
-    if (isReplace) {
-        replaceOfIgnoreStr = @" or replace";
-    } else if (isIgnore) {
-        replaceOfIgnoreStr = @" or ignore";
-    }
-    
-    NSString *sql = [NSString stringWithFormat:sqlFormat, replaceOfIgnoreStr, table, [keys componentsJoinedByString:@","], [valuePlaceholders componentsJoinedByString:@","]];
+    [sql replaceCharactersInRange:NSMakeRange(sql.length - 1, 1) withString:@";"];
 //    NSLog(@"%@", sql);
     
-    return [self executeUpdate:sql withParameterDictionary:keyValues finish:finish];
+    return [self executeUpdate:sql finish:finish];
 }
 
 - (CRUDOperation *)update:(NSString *)table
@@ -315,8 +350,8 @@
     return [self update:table keyValues:keyValues where:nil finish:finish];
 }
 
-- (CRUDOperation *)deleteTable:(nonnull NSString *)table
-                        finish:(nullable SQLExecuteResultBlock)finish {
+- (CRUDOperation *)cleanTable:(nonnull NSString *)table
+                       finish:(nullable SQLExecuteResultBlock)finish {
     return [self deleteFrom:table where:nil finish:finish];
 }
 

@@ -18,4 +18,7 @@
 
 @property (nonatomic, assign) NSInteger age;
 
+// 可空字段
+@property (nonatomic, copy) NSString *address;
+
 @end

@@ -93,6 +93,9 @@
     
     // 生成最终的建表sql语句，这里需要将设置主键的语句和字段属性语句拼接起来
     NSString *createTableSQL = [NSString stringWithFormat:createSQLFormat, tableName, [NSString stringWithFormat:@"%@, %@", keysFeaturesStr, primaryKeysStr]];
+    if (primaryKeysStr.length == 0) {
+        createTableSQL = [NSString stringWithFormat:createSQLFormat, tableName, [NSString stringWithFormat:@"%@", keysFeaturesStr]];
+    }
     
     return createTableSQL;
 }

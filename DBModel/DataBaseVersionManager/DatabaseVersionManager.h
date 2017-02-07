@@ -10,7 +10,7 @@
 // 仿照FMDBMigrationManager实现
 
 #import <Foundation/Foundation.h>
-#import <FMDB.h>
+#import "FMDB.h"
 
 @protocol DBVersionMigrating;
 

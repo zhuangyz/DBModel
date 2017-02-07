@@ -19,6 +19,7 @@
              @"user_name",
              @"mobile",
              @"age",
+             @"address",
              ];
 }
 
@@ -29,6 +30,7 @@
              @"user_name":@"userName",
              @"age":@"age",
              @"mobile":@"mobile",
+             @"address":@"address",
              };
 }
 
