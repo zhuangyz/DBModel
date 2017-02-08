@@ -20,17 +20,19 @@
              @"mobile",
              @"age",
              @"address",
+             @"weight",
              ];
 }
 
 // 字段对应的model属性
 + (NSDictionary<NSString *, NSString *> *)keyOfProperty {
     return @{
-             @"user_id":@"userId",
-             @"user_name":@"userName",
-             @"age":@"age",
-             @"mobile":@"mobile",
-             @"address":@"address",
+             @"user_id"     :@"userId",
+             @"user_name"   :@"userName",
+             @"age"         :@"age",
+             @"mobile"      :@"mobile",
+             @"address"     :@"address",
+             @"weight"      :@"weight",
              };
 }
 
@@ -58,6 +60,7 @@
 + (NSDictionary<NSString *, id> *)defaultValueForKeys {
     return @{
              @"age":@(0),
+             @"weight":@(0),
              };
 }
 

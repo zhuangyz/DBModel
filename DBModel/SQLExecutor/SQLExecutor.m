@@ -7,8 +7,13 @@
 //
 
 #import "SQLExecutor.h"
-#import "FMDB.h"
 #import "CRUDOperationQueue.h"
+
+#if __has_include(<FMDB.h>)
+#import <FMDB.h>
+#else
+#import "FMDB.h"
+#endif
 
 @implementation SQLExecuteFailModel
 
@@ -71,20 +76,42 @@
 }
 
 #pragma mark 查询
-- (CRUDOperation *)executeQuery:(nonnull NSString *)sql
-                         finish:(nullable SQLExecuteResultBlock)finish {
+- (CRUDOperation *)executeQuery:(NSString *)sql
+                         finish:(SQLExecuteResultBlock)finish {
     
-    return [self executeQuery:sql withArgumentsInArray:nil finish:finish];
+    return [self executeQuery:sql withParameterDictionary:nil orWithArgumentsInArray:nil finish:finish];
 }
 
-- (CRUDOperation *)executeQuery:(nonnull NSString *)sql
-           withArgumentsInArray:(nullable NSArray *)arguments
-                         finish:(nullable SQLExecuteResultBlock)finish {
+- (CRUDOperation *)executeQuery:(NSString *)sql
+                withParameterDictionary:(NSDictionary *)params
+                                 finish:(SQLExecuteResultBlock)finish {
+    
+    return [self executeQuery:sql withParameterDictionary:params orWithArgumentsInArray:nil finish:finish];
+}
+
+- (CRUDOperation *)executeQuery:(NSString *)sql
+           withArgumentsInArray:(NSArray *)arguments
+                         finish:(SQLExecuteResultBlock)finish {
+    
+    return [self executeQuery:sql withParameterDictionary:nil orWithArgumentsInArray:arguments finish:finish];
+}
+
+- (CRUDOperation *)executeQuery:(NSString *)sql
+        withParameterDictionary:(NSDictionary *)params
+         orWithArgumentsInArray:(NSArray *)arguments
+                         finish:(SQLExecuteResultBlock)finish {
     
     CRUDOperation *operation = [CRUDOperation blockOperationWithBlock:^{
         [self.dbQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
             NSMutableArray *result = [NSMutableArray array];
-            FMResultSet *rs = [db executeQuery:sql withArgumentsInArray:arguments];
+            FMResultSet *rs;
+            if (params) {
+                rs = [db executeQuery:sql withParameterDictionary:params];
+            } else if (arguments) {
+                rs = [db executeQuery:sql withArgumentsInArray:arguments];
+            } else {
+                rs = [db executeQuery:sql];
+            }
             
             // 执行错误
             if (!rs) {
@@ -114,30 +141,30 @@
 }
 
 #pragma mark 插入、更新、删除
-- (CRUDOperation *)executeUpdate:(nonnull NSString *)sql
-                          finish:(nullable SQLExecuteResultBlock)finish {
+- (CRUDOperation *)executeUpdate:(NSString *)sql
+                          finish:(SQLExecuteResultBlock)finish {
 
     return [self executeUpdate:sql withParameterDictionary:nil orWithArgumentsInArray:nil finish:finish];
 }
 
-- (CRUDOperation *)executeUpdate:(nonnull NSString *)sql
-         withParameterDictionary:(nullable NSDictionary *)arguments
-                          finish:(nullable SQLExecuteResultBlock)finish {
+- (CRUDOperation *)executeUpdate:(NSString *)sql
+         withParameterDictionary:(NSDictionary *)params
+                          finish:(SQLExecuteResultBlock)finish {
     
-    return [self executeUpdate:sql withParameterDictionary:arguments orWithArgumentsInArray:nil finish:finish];
+    return [self executeUpdate:sql withParameterDictionary:params orWithArgumentsInArray:nil finish:finish];
 }
 
-- (CRUDOperation *)executeUpdate:(nonnull NSString *)sql
-            withArgumentsInArray:(nullable NSArray *)arguments
-                          finish:(nullable SQLExecuteResultBlock)finish {
+- (CRUDOperation *)executeUpdate:(NSString *)sql
+            withArgumentsInArray:(NSArray *)arguments
+                          finish:(SQLExecuteResultBlock)finish {
     
     return [self executeUpdate:sql withParameterDictionary:nil orWithArgumentsInArray:arguments finish:finish];
 }
 
-- (CRUDOperation *)executeUpdate:(nonnull NSString *)sql
-         withParameterDictionary:(nullable NSDictionary *)params
-          orWithArgumentsInArray:(nullable NSArray *)arguments
-                          finish:(nullable SQLExecuteResultBlock)finish {
+- (CRUDOperation *)executeUpdate:(NSString *)sql
+         withParameterDictionary:(NSDictionary *)params
+          orWithArgumentsInArray:(NSArray *)arguments
+                          finish:(SQLExecuteResultBlock)finish {
     
     CRUDOperation *operation = [CRUDOperation blockOperationWithBlock:^{
         [self.dbQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
@@ -344,68 +371,68 @@
 
 @implementation SQLExecutor (EasyInvoking)
 
-- (CRUDOperation *)update:(nonnull NSString *)table
-                keyValues:(nonnull NSDictionary *)keyValues
-                   finish:(nullable SQLExecuteResultBlock)finish {
+- (CRUDOperation *)update:(NSString *)table
+                keyValues:(NSDictionary *)keyValues
+                   finish:(SQLExecuteResultBlock)finish {
     return [self update:table keyValues:keyValues where:nil finish:finish];
 }
 
-- (CRUDOperation *)cleanTable:(nonnull NSString *)table
-                       finish:(nullable SQLExecuteResultBlock)finish {
+- (CRUDOperation *)cleanTable:(NSString *)table
+                       finish:(SQLExecuteResultBlock)finish {
     return [self deleteFrom:table where:nil finish:finish];
 }
 
-- (CRUDOperation *)selectAll:(nonnull NSString *)table
-                      finish:(nullable SQLExecuteResultBlock)finish {
+- (CRUDOperation *)selectAll:(NSString *)table
+                      finish:(SQLExecuteResultBlock)finish {
     return [self select:table keys:nil where:nil orderBy:nil offset:0 limit:0 finish:finish];
 }
 
-- (CRUDOperation *)selectAll:(nonnull NSString *)table
-                        keys:(nullable NSArray *)keys
-                      finish:(nullable SQLExecuteResultBlock)finish {
+- (CRUDOperation *)selectAll:(NSString *)table
+                        keys:(NSArray *)keys
+                      finish:(SQLExecuteResultBlock)finish {
     return [self select:table keys:keys where:nil orderBy:nil offset:0 limit:0 finish:finish];
 }
 
-- (CRUDOperation *)selectAll:(nonnull NSString *)table
-                     orderBy:(nullable NSString *)orders
-                      finish:(nullable SQLExecuteResultBlock)finish {
+- (CRUDOperation *)selectAll:(NSString *)table
+                     orderBy:(NSString *)orders
+                      finish:(SQLExecuteResultBlock)finish {
     return [self select:table keys:nil where:nil orderBy:orders offset:0 limit:0 finish:finish];
 }
 
-- (CRUDOperation *)selectAll:(nonnull NSString *)table
-                        keys:(nullable NSArray *)keys
-                     orderBy:(nullable NSString *)orders
-                      finish:(nullable SQLExecuteResultBlock)finish {
+- (CRUDOperation *)selectAll:(NSString *)table
+                        keys:(NSArray *)keys
+                     orderBy:(NSString *)orders
+                      finish:(SQLExecuteResultBlock)finish {
     return [self select:table keys:keys where:nil orderBy:orders offset:0 limit:0 finish:finish];
 }
 
-- (CRUDOperation *)select:(nonnull NSString *)table
-                    where:(nullable NSString *)condition
-                   finish:(nullable SQLExecuteResultBlock)finish {
+- (CRUDOperation *)select:(NSString *)table
+                    where:(NSString *)condition
+                   finish:(SQLExecuteResultBlock)finish {
     return [self select:table keys:nil where:condition orderBy:nil offset:0 limit:0 finish:finish];
 }
 
-- (CRUDOperation *)select:(nonnull NSString *)table
-                    where:(nullable NSString *)condition
-                  orderBy:(nullable NSString *)orders
-                   finish:(nullable SQLExecuteResultBlock)finish {
+- (CRUDOperation *)select:(NSString *)table
+                    where:(NSString *)condition
+                  orderBy:(NSString *)orders
+                   finish:(SQLExecuteResultBlock)finish {
     return [self select:table keys:nil where:condition orderBy:orders offset:0 limit:0 finish:finish];
 }
 
-- (CRUDOperation *)select:(nonnull NSString *)table
-                     keys:(nullable NSArray *)keys
-                    where:(nullable NSString *)condition
-                  orderBy:(nullable NSString *)orders
-                   finish:(nullable SQLExecuteResultBlock)finish {
+- (CRUDOperation *)select:(NSString *)table
+                     keys:(NSArray *)keys
+                    where:(NSString *)condition
+                  orderBy:(NSString *)orders
+                   finish:(SQLExecuteResultBlock)finish {
     return [self select:table keys:keys where:condition orderBy:orders offset:0 limit:0 finish:finish];
 }
 
-- (CRUDOperation *)select:(nonnull NSString *)table
-                    where:(nullable NSString *)condition
-                  orderBy:(nullable NSString *)orders
+- (CRUDOperation *)select:(NSString *)table
+                    where:(NSString *)condition
+                  orderBy:(NSString *)orders
                    offset:(NSUInteger)offset
                     limit:(NSUInteger)limit
-                   finish:(nullable SQLExecuteResultBlock)finish {
+                   finish:(SQLExecuteResultBlock)finish {
     return [self select:table keys:nil where:condition orderBy:orders offset:offset limit:limit finish:finish];
 }
 

@@ -8,6 +8,8 @@
 
 #import "AppDelegate.h"
 
+// 建议数据库版本更新写到AppDelegate的分类里，容易管理一些，像这个分类这样
+// 例外，建议更早的执行更新
 @interface AppDelegate (DatabaseUpdate)
 
 - (void)updateDatabaseIfNeeded;

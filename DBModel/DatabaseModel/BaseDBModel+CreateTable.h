@@ -7,7 +7,11 @@
 //
 
 #import "BaseDBModel.h"
+#if __has_include(<YYClassInfo.h>)
+#import <YYClassInfo.h>
+#else
 #import "YYClassInfo.h"
+#endif
 
 /**
  *  根据属性信息获取其在数据库中对应的类型，如果属性的类型不为数值型或字符串类型，则返回结果为@""

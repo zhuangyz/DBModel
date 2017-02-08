@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5DCD8FAC1E4AFD760015855C /* DBVersionMigration2.m in Sources */ = {isa = PBXBuildFile; fileRef = 5DCD8FAB1E4AFD760015855C /* DBVersionMigration2.m */; };
+		5DCD8FAD1E4AFD760015855C /* DBVersionMigration2.m in Sources */ = {isa = PBXBuildFile; fileRef = 5DCD8FAB1E4AFD760015855C /* DBVersionMigration2.m */; };
+		5DCD8FB41E4B08780015855C /* FMDatabase+AlterTable.m in Sources */ = {isa = PBXBuildFile; fileRef = 5DCD8FB31E4B08780015855C /* FMDatabase+AlterTable.m */; };
+		5DCD8FB51E4B08780015855C /* FMDatabase+AlterTable.m in Sources */ = {isa = PBXBuildFile; fileRef = 5DCD8FB31E4B08780015855C /* FMDatabase+AlterTable.m */; };
+		5DCD8FBA1E4B11880015855C /* AppDelegate+DatabaseUpdate.m in Sources */ = {isa = PBXBuildFile; fileRef = 5DCD8FB91E4B11880015855C /* AppDelegate+DatabaseUpdate.m */; };
+		5DCD8FBB1E4B11880015855C /* AppDelegate+DatabaseUpdate.m in Sources */ = {isa = PBXBuildFile; fileRef = 5DCD8FB91E4B11880015855C /* AppDelegate+DatabaseUpdate.m */; };
 		5DE9D5321E49BFCD005171EA /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 5DE9D5061E49BFCD005171EA /* AppDelegate.m */; };
 		5DE9D5331E49BFCD005171EA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5DE9D5071E49BFCD005171EA /* Assets.xcassets */; };
 		5DE9D5341E49BFCD005171EA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5DE9D5081E49BFCD005171EA /* LaunchScreen.storyboard */; };
@@ -14,7 +20,6 @@
 		5DE9D5361E49BFCD005171EA /* BaseDBModel+ActiveRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 5DE9D50E1E49BFCD005171EA /* BaseDBModel+ActiveRecord.m */; };
 		5DE9D5371E49BFCD005171EA /* BaseDBModel+CreateTable.m in Sources */ = {isa = PBXBuildFile; fileRef = 5DE9D5101E49BFCD005171EA /* BaseDBModel+CreateTable.m */; };
 		5DE9D5381E49BFCD005171EA /* BaseDBModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 5DE9D5121E49BFCD005171EA /* BaseDBModel.m */; };
-		5DE9D5391E49BFCD005171EA /* AppDelegate+DatabaseUpdate.m in Sources */ = {isa = PBXBuildFile; fileRef = 5DE9D5181E49BFCD005171EA /* AppDelegate+DatabaseUpdate.m */; };
 		5DE9D53A1E49BFCD005171EA /* BaseDBVersionMigration.m in Sources */ = {isa = PBXBuildFile; fileRef = 5DE9D51A1E49BFCD005171EA /* BaseDBVersionMigration.m */; };
 		5DE9D53B1E49BFCD005171EA /* DatabaseVersionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5DE9D51D1E49BFCD005171EA /* DatabaseVersionManager.m */; };
 		5DE9D53C1E49BFCD005171EA /* DBVersionMigration1.m in Sources */ = {isa = PBXBuildFile; fileRef = 5DE9D51F1E49BFCD005171EA /* DBVersionMigration1.m */; };
@@ -53,6 +58,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		5DCD8FAA1E4AFD760015855C /* DBVersionMigration2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBVersionMigration2.h; sourceTree = "<group>"; };
+		5DCD8FAB1E4AFD760015855C /* DBVersionMigration2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBVersionMigration2.m; sourceTree = "<group>"; };
+		5DCD8FB21E4B08780015855C /* FMDatabase+AlterTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "FMDatabase+AlterTable.h"; sourceTree = "<group>"; };
+		5DCD8FB31E4B08780015855C /* FMDatabase+AlterTable.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "FMDatabase+AlterTable.m"; sourceTree = "<group>"; };
+		5DCD8FB71E4B0F0A0015855C /* DatabaseConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DatabaseConstants.h; sourceTree = "<group>"; };
+		5DCD8FB81E4B11880015855C /* AppDelegate+DatabaseUpdate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "AppDelegate+DatabaseUpdate.h"; sourceTree = "<group>"; };
+		5DCD8FB91E4B11880015855C /* AppDelegate+DatabaseUpdate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "AppDelegate+DatabaseUpdate.m"; sourceTree = "<group>"; };
 		5DE9D4DA1E49BF2F005171EA /* DBModel.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DBModel.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5DE9D4F31E49BF2F005171EA /* DBModelTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DBModelTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5DE9D4F91E49BF2F005171EA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -70,11 +82,8 @@
 		5DE9D5131E49BFCD005171EA /* TableActiveRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableActiveRecord.h; sourceTree = "<group>"; };
 		5DE9D5141E49BFCD005171EA /* TableCreator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableCreator.h; sourceTree = "<group>"; };
 		5DE9D5151E49BFCD005171EA /* TableFieldFeatures.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableFieldFeatures.h; sourceTree = "<group>"; };
-		5DE9D5171E49BFCD005171EA /* AppDelegate+DatabaseUpdate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "AppDelegate+DatabaseUpdate.h"; sourceTree = "<group>"; };
-		5DE9D5181E49BFCD005171EA /* AppDelegate+DatabaseUpdate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "AppDelegate+DatabaseUpdate.m"; sourceTree = "<group>"; };
 		5DE9D5191E49BFCD005171EA /* BaseDBVersionMigration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseDBVersionMigration.h; sourceTree = "<group>"; };
 		5DE9D51A1E49BFCD005171EA /* BaseDBVersionMigration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BaseDBVersionMigration.m; sourceTree = "<group>"; };
-		5DE9D51B1E49BFCD005171EA /* DatabaseConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DatabaseConstants.h; sourceTree = "<group>"; };
 		5DE9D51C1E49BFCD005171EA /* DatabaseVersionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DatabaseVersionManager.h; sourceTree = "<group>"; };
 		5DE9D51D1E49BFCD005171EA /* DatabaseVersionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DatabaseVersionManager.m; sourceTree = "<group>"; };
 		5DE9D51E1E49BFCD005171EA /* DBVersionMigration1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBVersionMigration1.h; sourceTree = "<group>"; };
@@ -174,10 +183,17 @@
 				5DE9D50C1E49BFCD005171EA /* DatabaseModel */,
 				5DE9D5161E49BFCD005171EA /* DataBaseVersionManager */,
 				5DE9D5221E49BFCD005171EA /* SQLExecutor */,
+				5DCD8FB71E4B0F0A0015855C /* DatabaseConstants.h */,
 				5DE9D51E1E49BFCD005171EA /* DBVersionMigration1.h */,
 				5DE9D51F1E49BFCD005171EA /* DBVersionMigration1.m */,
+				5DCD8FAA1E4AFD760015855C /* DBVersionMigration2.h */,
+				5DCD8FAB1E4AFD760015855C /* DBVersionMigration2.m */,
+				5DE9D52D1E49BFCD005171EA /* User.h */,
+				5DE9D52E1E49BFCD005171EA /* User.m */,
 				5DE9D5051E49BFCD005171EA /* AppDelegate.h */,
 				5DE9D5061E49BFCD005171EA /* AppDelegate.m */,
+				5DCD8FB81E4B11880015855C /* AppDelegate+DatabaseUpdate.h */,
+				5DCD8FB91E4B11880015855C /* AppDelegate+DatabaseUpdate.m */,
 				5DE9D5071E49BFCD005171EA /* Assets.xcassets */,
 				5DE9D5081E49BFCD005171EA /* LaunchScreen.storyboard */,
 				5DE9D50A1E49BFCD005171EA /* Main.storyboard */,
@@ -185,8 +201,6 @@
 				5DE9D5211E49BFCD005171EA /* main.m */,
 				5DE9D76E1E49C0ED005171EA /* YYModel */,
 				5DE9D54B1E49C062005171EA /* FMDB */,
-				5DE9D52D1E49BFCD005171EA /* User.h */,
-				5DE9D52E1E49BFCD005171EA /* User.m */,
 				5DE9D52F1E49BFCD005171EA /* ViewController.h */,
 				5DE9D5301E49BFCD005171EA /* ViewController.m */,
 			);
@@ -212,13 +226,12 @@
 		5DE9D5161E49BFCD005171EA /* DataBaseVersionManager */ = {
 			isa = PBXGroup;
 			children = (
-				5DE9D5171E49BFCD005171EA /* AppDelegate+DatabaseUpdate.h */,
-				5DE9D5181E49BFCD005171EA /* AppDelegate+DatabaseUpdate.m */,
 				5DE9D5191E49BFCD005171EA /* BaseDBVersionMigration.h */,
 				5DE9D51A1E49BFCD005171EA /* BaseDBVersionMigration.m */,
-				5DE9D51B1E49BFCD005171EA /* DatabaseConstants.h */,
 				5DE9D51C1E49BFCD005171EA /* DatabaseVersionManager.h */,
 				5DE9D51D1E49BFCD005171EA /* DatabaseVersionManager.m */,
+				5DCD8FB21E4B08780015855C /* FMDatabase+AlterTable.h */,
+				5DCD8FB31E4B08780015855C /* FMDatabase+AlterTable.m */,
 			);
 			path = DataBaseVersionManager;
 			sourceTree = "<group>";
@@ -403,6 +416,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5DE9D5371E49BFCD005171EA /* BaseDBModel+CreateTable.m in Sources */,
+				5DCD8FB41E4B08780015855C /* FMDatabase+AlterTable.m in Sources */,
 				5DE9D5431E49BFCD005171EA /* SQLExecutor.m in Sources */,
 				5DE9D5321E49BFCD005171EA /* AppDelegate.m in Sources */,
 				5DE9D6131E49C063005171EA /* FMDatabase.m in Sources */,
@@ -417,8 +431,9 @@
 				5DE9D53A1E49BFCD005171EA /* BaseDBVersionMigration.m in Sources */,
 				5DE9D5451E49BFCD005171EA /* ViewController.m in Sources */,
 				5DE9D5421E49BFCD005171EA /* NSString+SQLOrder.m in Sources */,
-				5DE9D5391E49BFCD005171EA /* AppDelegate+DatabaseUpdate.m in Sources */,
+				5DCD8FBA1E4B11880015855C /* AppDelegate+DatabaseUpdate.m in Sources */,
 				5DE9D53B1E49BFCD005171EA /* DatabaseVersionManager.m in Sources */,
+				5DCD8FAC1E4AFD760015855C /* DBVersionMigration2.m in Sources */,
 				5DE9D6141E49C063005171EA /* FMDatabaseAdditions.m in Sources */,
 				5DE9D53E1E49BFCD005171EA /* main.m in Sources */,
 				5DE9D6161E49C063005171EA /* FMDatabaseQueue.m in Sources */,
@@ -434,7 +449,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				5DE9D54A1E49BFFC005171EA /* NSOperationTests.m in Sources */,
+				5DCD8FB51E4B08780015855C /* FMDatabase+AlterTable.m in Sources */,
 				5DE9D5491E49BFFC005171EA /* DBModelTests.m in Sources */,
+				5DCD8FAD1E4AFD760015855C /* DBVersionMigration2.m in Sources */,
+				5DCD8FBB1E4B11880015855C /* AppDelegate+DatabaseUpdate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

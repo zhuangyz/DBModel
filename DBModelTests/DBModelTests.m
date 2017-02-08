@@ -13,6 +13,7 @@
 #import "DatabaseVersionManager.h"
 #import "DatabaseConstants.h"
 #import "DBVersionMigration1.h"
+#import "DBVersionMigration2.h"
 
 #define WAIT do {\
         [self expectationForNotification:@"Test" object:nil handler:nil];\
@@ -36,7 +37,7 @@
     
     DatabaseVersionManager *manager = [DatabaseVersionManager managerWithDBPath:kDatabasePath];
     [manager addMigrations:[self allMigrations]];
-    [manager updateDatabaseToVersion:1 finish:^(BOOL success) {
+    [manager updateDatabaseToVersion:2 finish:^(BOOL success) {
         if (success) {
             NSLog(@"数据库创建/更新成功");
         }
@@ -46,6 +47,7 @@
 - (NSArray<BaseDBVersionMigration *> *)allMigrations {
     return @[
              [DBVersionMigration1 new],
+             [DBVersionMigration2 new],
              ];
 }
 
@@ -80,12 +82,13 @@
 
 - (void)testUserInsert {
     NSMutableArray *users = [NSMutableArray array];
-    for (NSInteger i = 0; i < 1000; i++) {
+    for (NSInteger i = 0; i < 10; i++) {
         User *user = [[User alloc] init];
         user.userId = i;
         user.userName = [NSString stringWithFormat:@"user_name%ld", i];
         user.mobile = [NSString stringWithFormat:@"%ld", 13632200000 + i];
         user.age = (i % 80) + 1;
+        user.weight = 50.0;
         [users addObject:user];
     }
     NSTimeInterval beginTime = [[NSDate date] timeIntervalSince1970];
@@ -238,18 +241,6 @@
 
 - (void)printUser:(User *)user {
     NSLog(@"\nuser_id:%ld\nuser_name:%@\nmobile:%@\nage:%ld", user.userId, user.userName, user.mobile, user.age);
-}
-
-- (void)tearDown {
-    // Put teardown code here. This method is called after the invocation of each test method in the class.
-    [super tearDown];
-}
-
-- (void)testPerformanceExample {
-    // This is an example of a performance test case.
-    [self measureBlock:^{
-        // Put the code you want to measure the time of here.
-    }];
 }
 
 @end

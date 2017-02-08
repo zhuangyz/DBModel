@@ -20,9 +20,7 @@
 }
 
 - (BOOL)updateDatabase:(FMDatabase *)database {
-    NSLog(@"%@", [self versionDescription]);
-    [[User alloc] init];
-    return YES;
+    return [database executeUpdate:[User easyCreateTableSQL]];
 }
 
 @end

@@ -13,25 +13,6 @@
 #pragma clang diagnostic ignored "-Wprotocol"
 @implementation BaseDBModel
 
-+ (void)initialize {
-    if ([self class] == [BaseDBModel class]) {
-        return;
-    }
-    
-    NSString *createTableSQL = [self customCreateTableSQL];
-    if (!createTableSQL) {
-        createTableSQL = [self easyCreateTableSQL];
-    }
-    NSLog(@"%@", createTableSQL);
-    
-    SQLExecutor *executor = [[self class] executor];
-    [executor executeUpdate:createTableSQL finish:^(BOOL success, id result, SQLExecuteFailModel *failModel) {
-        if (!success) {
-            NSLog(@"建表失败");
-        }
-    }];
-}
-
 + (NSString *)databasePath {
     return kDatabasePath;
 }

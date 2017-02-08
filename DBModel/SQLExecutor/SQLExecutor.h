@@ -51,6 +51,13 @@ typedef void(^SQLExecuteResultBlock)(BOOL success, _Nullable id result, SQLExecu
  *  执行查询功能
  */
 - (nonnull CRUDOperation *)executeQuery:(nonnull NSString *)sql
+                withParameterDictionary:(nullable NSDictionary *)params
+                                 finish:(nullable SQLExecuteResultBlock)finish;
+
+/**
+ *  执行查询功能
+ */
+- (nonnull CRUDOperation *)executeQuery:(nonnull NSString *)sql
                    withArgumentsInArray:(nullable NSArray *)arguments
                                  finish:(nullable SQLExecuteResultBlock)finish;
 
@@ -64,7 +71,7 @@ typedef void(^SQLExecuteResultBlock)(BOOL success, _Nullable id result, SQLExecu
  *  执行更新功能
  */
 - (nonnull CRUDOperation *)executeUpdate:(nonnull NSString *)sql
-                 withParameterDictionary:(nullable NSDictionary *)arguments
+                 withParameterDictionary:(nullable NSDictionary *)params
                                   finish:(nullable SQLExecuteResultBlock)finish;
 
 /**

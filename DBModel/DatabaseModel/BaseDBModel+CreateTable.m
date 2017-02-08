@@ -97,6 +97,7 @@
         createTableSQL = [NSString stringWithFormat:createSQLFormat, tableName, [NSString stringWithFormat:@"%@", keysFeaturesStr]];
     }
     
+    NSLog(@"%@", createTableSQL);
     return createTableSQL;
 }
 

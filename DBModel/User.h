@@ -23,4 +23,6 @@
 // 非数据库字段相关的属性
 @property (nonatomic, assign) NSInteger state;
 
+@property (nonatomic, assign) float weight;
+
 @end

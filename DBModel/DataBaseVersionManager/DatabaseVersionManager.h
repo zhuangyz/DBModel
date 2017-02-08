@@ -8,6 +8,7 @@
 
 // 版本更新
 // 仿照FMDBMigrationManager实现
+// https://github.com/layerhq/FMDBMigrationManager
 
 #import <Foundation/Foundation.h>
 #import "FMDB.h"
