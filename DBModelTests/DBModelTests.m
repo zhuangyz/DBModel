@@ -132,7 +132,7 @@
     [User findAll:^(NSArray *models, SQLExecuteFailModel *failModel) {
         NSLog(@"查找到%ld条数据，耗时%f秒", models.count, [[NSDate date] timeIntervalSince1970] - beginTime);
         if (!failModel) {
-//            [self printUsers:models];
+            [self printUsers:models];
         } else {
             NSLog(@"查找失败 %@", failModel.errorMsg);
         }

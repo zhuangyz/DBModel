@@ -20,5 +20,7 @@
 
 // 可空字段
 @property (nonatomic, copy) NSString *address;
+// 非数据库字段相关的属性
+@property (nonatomic, assign) NSInteger state;
 
 @end

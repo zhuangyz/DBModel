@@ -170,16 +170,17 @@
 		5DE9D5041E49BFCD005171EA /* DBModel */ = {
 			isa = PBXGroup;
 			children = (
+				5DE9D5311E49BFCD005171EA /* 已知问题 */,
 				5DE9D50C1E49BFCD005171EA /* DatabaseModel */,
 				5DE9D5161E49BFCD005171EA /* DataBaseVersionManager */,
 				5DE9D5221E49BFCD005171EA /* SQLExecutor */,
+				5DE9D51E1E49BFCD005171EA /* DBVersionMigration1.h */,
+				5DE9D51F1E49BFCD005171EA /* DBVersionMigration1.m */,
 				5DE9D5051E49BFCD005171EA /* AppDelegate.h */,
 				5DE9D5061E49BFCD005171EA /* AppDelegate.m */,
 				5DE9D5071E49BFCD005171EA /* Assets.xcassets */,
 				5DE9D5081E49BFCD005171EA /* LaunchScreen.storyboard */,
 				5DE9D50A1E49BFCD005171EA /* Main.storyboard */,
-				5DE9D51E1E49BFCD005171EA /* DBVersionMigration1.h */,
-				5DE9D51F1E49BFCD005171EA /* DBVersionMigration1.m */,
 				5DE9D5201E49BFCD005171EA /* Info.plist */,
 				5DE9D5211E49BFCD005171EA /* main.m */,
 				5DE9D76E1E49C0ED005171EA /* YYModel */,
@@ -188,7 +189,6 @@
 				5DE9D52E1E49BFCD005171EA /* User.m */,
 				5DE9D52F1E49BFCD005171EA /* ViewController.h */,
 				5DE9D5301E49BFCD005171EA /* ViewController.m */,
-				5DE9D5311E49BFCD005171EA /* 已知问题 */,
 			);
 			path = DBModel;
 			sourceTree = "<group>";
@@ -226,6 +226,8 @@
 		5DE9D5221E49BFCD005171EA /* SQLExecutor */ = {
 			isa = PBXGroup;
 			children = (
+				5DE9D52B1E49BFCD005171EA /* SQLExecutor.h */,
+				5DE9D52C1E49BFCD005171EA /* SQLExecutor.m */,
 				5DE9D5231E49BFCD005171EA /* CRUDOperation.h */,
 				5DE9D5241E49BFCD005171EA /* CRUDOperation.m */,
 				5DE9D5251E49BFCD005171EA /* CRUDOperationQueue.h */,
@@ -234,8 +236,6 @@
 				5DE9D5281E49BFCD005171EA /* NSString+SQLLink.m */,
 				5DE9D5291E49BFCD005171EA /* NSString+SQLOrder.h */,
 				5DE9D52A1E49BFCD005171EA /* NSString+SQLOrder.m */,
-				5DE9D52B1E49BFCD005171EA /* SQLExecutor.h */,
-				5DE9D52C1E49BFCD005171EA /* SQLExecutor.m */,
 			);
 			path = SQLExecutor;
 			sourceTree = "<group>";

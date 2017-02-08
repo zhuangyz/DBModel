@@ -76,7 +76,6 @@
         NSLog(@"没有数据需要删除");
     }
     
-//    NSMutableString *where = [[NSMutableString alloc] init];
     NSMutableArray<NSString *> *wheres = [NSMutableArray array];
     
     NSArray *primaryKeys = [[self class] primaryKeys];
@@ -129,7 +128,6 @@
     
     NSArray *allKeys = [[self class] allKeys];
     NSDictionary *keyOfProperty = [[self class] keyOfProperty];
-//    NSDictionary *keyTypes = [NSDictionary dictionary];
     
     for (NSString *key in allKeys) {
         NSString *property = keyOfProperty[key];
@@ -142,7 +140,7 @@
     return model;
 }
 
-+ (NSArray *)transformKeyValuesToModels:(NSArray *)response {
++ (NSArray<BaseDBModel *> *)transformKeyValuesToModels:(NSArray<NSDictionary *> *)response {
     NSMutableArray *models = [NSMutableArray array];
     for (NSDictionary *keyValues in response) {
         BaseDBModel *model = [[self class] createModelWithKeyValues:keyValues];

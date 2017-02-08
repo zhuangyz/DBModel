@@ -139,7 +139,7 @@ typedef void(^SQLExecuteResultBlock)(BOOL success, _Nullable id result, SQLExecu
  *  @param table     表名
  *  @param keyValues 用一个字典来传递字段和字段值，key必须是数据库字段名！！！
  *  @param condition 条件语句，可以通过分类NSString+SQLLink的方法来生成条件语句，例如[[@"a=1" and:@"b=2"] or:[@"c=1" and:@"d=2"]]
- *  @param finish
+ *  @param finish    回调
  */
 - (nonnull CRUDOperation *)update:(nonnull NSString *)table
                         keyValues:(nonnull NSDictionary *)keyValues
@@ -151,7 +151,7 @@ typedef void(^SQLExecuteResultBlock)(BOOL success, _Nullable id result, SQLExecu
  *
  *  @param table     表名
  *  @param condition 条件语句，可以通过分类NSString+SQLLink的方法来生成条件语句，例如[[@"a=1" and:@"b=2"] or:[@"c=1" and:@"d=2"]]
- *  @param finish
+ *  @param finish    回调
  */
 - (nonnull CRUDOperation *)deleteFrom:(nonnull NSString *)table
                                 where:(nullable NSString *)condition
@@ -166,7 +166,7 @@ typedef void(^SQLExecuteResultBlock)(BOOL success, _Nullable id result, SQLExecu
  *  @param orders    排序语句，可以通过分类NSString+SQLOrder的方法来生成排序语句，例如[[NSString asc:@"name"] desc:@"time"]
  *  @param offset    偏移量
  *  @param limit     限制条数，为0时代表不做限制
- *  @param finish
+ *  @param finish    回调
  */
 - (nonnull CRUDOperation *)select:(nonnull NSString *)table
                              keys:(nullable NSArray *)keys
