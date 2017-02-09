@@ -18,12 +18,8 @@
 }
 
 + (SQLExecutor *)executor {
-    static SQLExecutor *executor = nil;
-    static dispatch_once_t once;
-    _dispatch_once(&once, ^{
-        executor = [SQLExecutor executorWithDBPath:[[self class] databasePath]];
-    });
-    return executor;
+    // 在-executorWithDBPath:里，每个path产生的是同一个SQLExecutor对象（根据path保存对象）
+    return [SQLExecutor executorWithDBPath:[[self class] databasePath]];
 }
 
 @end
