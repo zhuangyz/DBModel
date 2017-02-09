@@ -10,6 +10,11 @@
 // 仿照FMDBMigrationManager实现
 // https://github.com/layerhq/FMDBMigrationManager
 
+// 暂时作为独立的模块，所有更新操作都在主线程执行，
+// 如果和SQLExecutor一起用，需要考虑调用顺序的问题，避免同时操作数据库，
+// （建议在AppDelegate中的-application:didFinishLaunchingWithOptions:方法里尽早调用更新方法），
+// 后面考虑要不要把SQLExecutor引用进来，提高安全性。
+
 #import <Foundation/Foundation.h>
 #import "FMDB.h"
 
