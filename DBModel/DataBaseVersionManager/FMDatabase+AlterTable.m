@@ -30,7 +30,7 @@
     [rs close];
     
     NSMutableString *sql = [[NSMutableString alloc] initWithFormat:@"ALTER TABLE %@ ADD %@ %@", table, columnName, type];
-    if (allowNull) {
+    if (!allowNull) {
         [sql appendString:@" NOT NULL"];
     }
     if (autoIncrement) {

@@ -19,7 +19,7 @@
     return [database safeAddColumn:@"weight"
                            toTable:@"User"
                           dataType:@"REAL"
-                         allowNULL:NO
+                         allowNULL:YES
                      autoIncrement:NO
                           isUnique:NO
                       defaultValue:@"0"];

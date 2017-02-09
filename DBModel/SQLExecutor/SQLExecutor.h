@@ -32,7 +32,7 @@ typedef void(^SQLExecuteResultBlock)(BOOL success, _Nullable id result, SQLExecu
 /**
  *  执行sql语句的类
  *  必须用一个数据库文件地址来初始化类对象
- *  所有操作都在线程执行，执行完毕后在主线程回调
+ *  所有数据库操作都在子线程执行，执行完毕后在主线程回调
  */
 @interface SQLExecutor : NSObject
 
