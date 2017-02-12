@@ -10,6 +10,7 @@
 #import "CRUDOperation.h"
 #import "NSString+SQLLink.h"
 #import "NSString+SQLOrder.h"
+#import "NSString+SQLCondition.h"
 
 #define run_block_if_exist(block, ...) block ? block(__VA_ARGS__) : nil
 

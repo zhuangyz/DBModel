@@ -129,6 +129,7 @@
             while ([rs next]) {
                 [result addObject:[rs resultDictionary]];
             }
+            [rs close];
             
             // 回归主线程下回调finish block
             dispatch_async(dispatch_get_main_queue(), ^{

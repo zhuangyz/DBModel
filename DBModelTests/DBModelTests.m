@@ -53,7 +53,7 @@
 
 #pragma mark 更新模块
 - (void)testUserDeleteSomeone {
-    [User findWhere:@"user_name='user_name3'" finish:^(NSArray *models, SQLExecuteFailModel *failModel) {
+    [User findWhere:[@"user_name" equals:@"user_name3"] finish:^(NSArray *models, SQLExecuteFailModel *failModel) {
         if (!failModel) {
             [User delete:models finish:^(SQLExecuteFailModel *failModel) {
                 if (failModel) {
@@ -105,7 +105,7 @@
 }
 
 - (void)testUserUpdate {
-    [User findWhere:@"age<=10" limit:10 finish:^(NSArray *models, SQLExecuteFailModel *failModel) {
+    [User findWhere:[@"age" lessOrEquals:@(10)] limit:10 finish:^(NSArray *models, SQLExecuteFailModel *failModel) {
         if (!failModel) {
             for (NSInteger i = 0; i < models.count; i++) {
                 User *user = models[i];
@@ -157,7 +157,7 @@
 }
 
 - (void)testUserFindWithCondition {
-    [User findWhere:[@"user_id=3" or:@"age=20"] finish:^(NSArray *models, SQLExecuteFailModel *failModel) {
+    [User findWhere:[[@"user_id" equals:@(3)] or:[@"age" equals:@(20)]] finish:^(NSArray *models, SQLExecuteFailModel *failModel) {
         if (!failModel) {
             [self printUsers:models];
         } else {
@@ -169,7 +169,7 @@
 }
 
 - (void)testUserFindWithConditionAndOrder {
-    [User findWhere:[@"user_id=3" or:@"age=20"] order:[NSString desc:@"user_id"] finish:^(NSArray *models, SQLExecuteFailModel *failModel) {
+    [User findWhere:[[@"user_id" equals:@(3)] or:[@"age" equals:@(20)]] order:[NSString desc:@"user_id"] finish:^(NSArray *models, SQLExecuteFailModel *failModel) {
         if (!failModel) {
             [self printUsers:models];
         } else {
@@ -181,7 +181,7 @@
 }
 
 - (void)testUserFindWithLimit {
-    [User findWhere:@"age<80" limit:5 finish:^(NSArray *models, SQLExecuteFailModel *failModel) {
+    [User findWhere:[@"age" lessThan:@(80)] limit:5 finish:^(NSArray *models, SQLExecuteFailModel *failModel) {
         if (!failModel) {
             [self printUsers:models];
         } else {
@@ -193,7 +193,7 @@
 }
 
 - (void)testUserFindWithLimitAndOffset {
-    [User findWhere:@"age<80" offset:20 limit:5 finish:^(NSArray *models, SQLExecuteFailModel *failModel) {
+    [User findWhere:[@"age" lessThan:@(80)] offset:20 limit:5 finish:^(NSArray *models, SQLExecuteFailModel *failModel) {
         if (!failModel) {
             [self printUsers:models];
         } else {
@@ -206,7 +206,7 @@
 
 // 测试最多参数的那个查询
 - (void)testUserFindWithAllArgs {
-    [User findWhere:@"age<80" order:[NSString desc:@"age"] offset:10 limit:10 finish:^(NSArray *models, SQLExecuteFailModel *failModel) {
+    [User findWhere:[@"age" lessThan:@(80)] order:[NSString desc:@"age"] offset:10 limit:10 finish:^(NSArray *models, SQLExecuteFailModel *failModel) {
         if (!failModel) {
             [self printUsers:models];
         } else {
@@ -226,7 +226,7 @@
 }
 
 - (void)testUserFindCountWithCondition {
-    [User countWhere:@"age<40" finish:^(NSInteger count) {
+    [User countWhere:[@"age" lessThan:@(40)] finish:^(NSInteger count) {
         NSLog(@"小于40岁的user有%ld个", count);
         NOTIFY;
     }];

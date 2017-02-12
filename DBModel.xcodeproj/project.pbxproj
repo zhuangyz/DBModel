@@ -45,6 +45,7 @@
 		5DE9D7741E49C0ED005171EA /* NSObject+YYModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 5DE9D7701E49C0ED005171EA /* NSObject+YYModel.m */; };
 		5DE9D7751E49C0ED005171EA /* YYClassInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 5DE9D7721E49C0ED005171EA /* YYClassInfo.m */; };
 		5DE9D7781E49C107005171EA /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DE9D7771E49C107005171EA /* libsqlite3.tbd */; };
+		5DEE5F281E4D6838002C0486 /* NSString+SQLCondition.m in Sources */ = {isa = PBXBuildFile; fileRef = 5DEE5F271E4D6838002C0486 /* NSString+SQLCondition.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -126,6 +127,8 @@
 		5DE9D7721E49C0ED005171EA /* YYClassInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YYClassInfo.m; sourceTree = "<group>"; };
 		5DE9D7731E49C0ED005171EA /* YYModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YYModel.h; sourceTree = "<group>"; };
 		5DE9D7771E49C107005171EA /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
+		5DEE5F261E4D6838002C0486 /* NSString+SQLCondition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+SQLCondition.h"; sourceTree = "<group>"; };
+		5DEE5F271E4D6838002C0486 /* NSString+SQLCondition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+SQLCondition.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -249,6 +252,8 @@
 				5DE9D5281E49BFCD005171EA /* NSString+SQLLink.m */,
 				5DE9D5291E49BFCD005171EA /* NSString+SQLOrder.h */,
 				5DE9D52A1E49BFCD005171EA /* NSString+SQLOrder.m */,
+				5DEE5F261E4D6838002C0486 /* NSString+SQLCondition.h */,
+				5DEE5F271E4D6838002C0486 /* NSString+SQLCondition.m */,
 			);
 			path = SQLExecutor;
 			sourceTree = "<group>";
@@ -436,6 +441,7 @@
 				5DCD8FAC1E4AFD760015855C /* DBVersionMigration2.m in Sources */,
 				5DE9D6141E49C063005171EA /* FMDatabaseAdditions.m in Sources */,
 				5DE9D53E1E49BFCD005171EA /* main.m in Sources */,
+				5DEE5F281E4D6838002C0486 /* NSString+SQLCondition.m in Sources */,
 				5DE9D6161E49C063005171EA /* FMDatabaseQueue.m in Sources */,
 				5DE9D7741E49C0ED005171EA /* NSObject+YYModel.m in Sources */,
 				5DE9D6151E49C063005171EA /* FMDatabasePool.m in Sources */,
